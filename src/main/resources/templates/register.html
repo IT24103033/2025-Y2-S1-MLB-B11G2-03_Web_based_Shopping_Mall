@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>User Registration</title>
+  <link rel="stylesheet" th:href="@{/css/register.css}">
+</head>
+<body>
+<script th:src="@{/js/register.js}"></script>
+<h2>User Registration</h2>
+<form th:action="@{/register}" th:object="${user}" method="post">
+  <!-- First Name -->
+  <label for="first_name">First Name:</label>
+  <input type="text" id="first_name" th:field="*{first_name}" placeholder="First Name" required>
+  <br><br>
+
+  <!-- Last Name -->
+  <label for="last_name">Last Name:</label>
+  <input type="text" id="last_name" th:field="*{last_name}" placeholder="Last Name" required>
+  <br><br>
+
+  <!-- Username -->
+  <label for="username">Username:</label>
+  <input type="text" id="username" th:field="*{username}" placeholder="Username" required>
+  <br><br>
+
+  <!-- Email -->
+  <label for="email">Email:</label>
+  <input type="email" id="email" th:field="*{email}" placeholder="Email" required>
+  <br><br>
+
+  <!-- Password -->
+  <label for="password">Password:</label>
+  <input type="password" id="password" th:field="*{password}" placeholder="Password" required>
+  <br><br>
+
+  <!-- Role Selection -->
+  <label for="role">Role:</label>
+  <select id="role" th:field="*{role}" required>
+    <option th:value="' '">--Select Role--</option>
+    <option th:value="CUSTOMER">Customer</option>
+    <option th:value="SHOP_OWNER">Shop Owner</option>
+  </select>
+  <br><br>
+
+  <!-- Submit Button -->
+  <button type="submit">Register</button>
+</form>
+</body>
+</html>

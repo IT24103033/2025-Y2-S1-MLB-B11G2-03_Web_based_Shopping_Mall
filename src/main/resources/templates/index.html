@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+</head>
+<body>
+<h1>Welcome to ShopiMall</h1>
+<button onclick="location.href='/login'">Login</button>
+<button onclick="location.href='/register'">Register</button>
+<a th:href="@{/profile}">View Profile</a>
+</body>
+</html>
