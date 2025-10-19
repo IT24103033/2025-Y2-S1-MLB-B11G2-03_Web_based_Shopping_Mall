@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Details - Nova Shopping Mall</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/reports.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .report-details {
+            background: #222;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+            margin: 2rem 0;
+        }
+
+        .report-details h2 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+        }
+
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .info-item {
+            background: #333;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #555;
+        }
+
+        .info-item label {
+            color: #ffd700;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-item span {
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .report-data {
+            background: #111;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            border: 1px solid #555;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .actions {
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background: #ffd700;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            background: #e6c200;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Analytics Section */
+        .analytics-section {
+            margin-top: 2rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .chart-container {
+            background: #333;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #555;
+        }
+
+        .chart-container h3 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #333 0%, #444 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            color: #ffd700;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-card .subtext {
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: #ffd700;
+            padding: 2rem;
+        }
+
+        .error {
+            background: #dc3545;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        @media print {
+            .actions, header nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">
+            <h1>Nova Shopping <span class="gold">Mall</span></h1>
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a th:href="${userRole == 'shop' ? '/reports/shop' : '/reports/admin'}">Dashboard</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="dashboard">
+    <div class="report-details">
+        <h2>Report Details</h2>
+
+        <div class="report-info">
+            <div class="info-item">
+                <label>Report ID:</label>
+                <span th:text="${report.reportId}"></span>
+            </div>
+
+            <div class="info-item">
+                <label>Report Type:</label>
+                <span th:text="${report.reportType}"></span>
+            </div>
+
+            <div class="info-item" th:if="${report.reportName != null and !report.reportName.isEmpty()}">
+                <label>Report Name:</label>
+                <span th:text="${report.reportName}"></span>
+            </div>
+
+            <div class="info-item" th:if="${report.reportDescription != null and !report.reportDescription.isEmpty()}">
+                <label>Report Description:</label>
+                <span th:text="${report.reportDescription}"></span>
+            </div>
+
+            <div class="info-item">
+                <label>Shop ID:</label>
+                <span th:text="${report.shopId}"></span>
+            </div>
+
+            <div class="info-item">
+                <label>User ID:</label>
+                <span th:text="${report.userId}"></span>
+            </div>
+        </div>
+
+        <h3>Report Data:</h3>
+        <div class="report-data" th:text="${report.reportData}"></div>
+
+        <!-- Analytics Section (Only for Sales Reports) -->
+        <div class="analytics-section" th:if="${report.reportType == 'Sales'}" id="analyticsSection">
+            <h2>📊 Visual Analytics</h2>
+            <div id="loadingAnalytics" class="loading">
+                <p>Loading analytics...</p>
+            </div>
+            <div id="analyticsError" class="error" style="display: none;"></div>
+
+            <!-- Summary Statistics -->
+            <div id="summaryStats" style="display: none;">
+                <h3 style="color: #ffd700; margin-top: 2rem;">Key Metrics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Total Orders</h4>
+                        <div class="value" id="totalOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Total Revenue</h4>
+                        <div class="value" id="totalRevenue">LKR 0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Avg Order Value</h4>
+                        <div class="value" id="avgOrderValue">LKR 0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Completed Orders</h4>
+                        <div class="value" id="completedOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Pending Orders</h4>
+                        <div class="value" id="pendingOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Cancelled Orders</h4>
+                        <div class="value" id="cancelledOrders">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div id="chartsGrid" class="analytics-grid" style="display: none;">
+                <div class="chart-container">
+                    <h3>Orders by Status</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Revenue by Status</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueStatusChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Sales by Category</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Revenue by Category</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueCategoryChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="grid-column: 1 / -1;">
+                    <h3>Top 10 Products by Revenue</h3>
+                    <div class="chart-wrapper" style="height: 400px;">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{'/reports/edit/' + ${report.reportId} + '?userRole=' + ${userRole}}" class="btn" style="background: #4CAF50; color: white;">✏️ Edit Report</a>
+            <button th:onclick="'exportReportToCsv(' + ${report.reportId} + ')'" class="btn btn-export">📥 Export to CSV</button>
+            <button onclick="window.print()" class="btn btn-print">🖨️ Print Report</button>
+            <a th:href="${userRole == 'shop' ? '/reports/shop' : '/reports/admin'}" class="btn">← Back to Dashboard</a>
+        </div>
+    </div>
+</main>
+
+<script th:inline="javascript">
+    const reportId = /*[[${report.reportId}]]*/ 0;
+    const reportType = /*[[${report.reportType}]]*/ '';
+</script>
+<script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/report-analytics.js}"></script>
+</body>
+</html>

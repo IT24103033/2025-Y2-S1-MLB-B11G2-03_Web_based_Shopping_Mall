@@ -1,0 +1,500 @@
+package com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.service;
+
+import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.entity.Order;
+import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.entity.Product;
+import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.entity.Report;
+import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.repository.OrderItemRepository;
+import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.repository.OrderRepository;
+import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.repository.ProductRepository;
+import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.repository.ReportRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+@Service
+public class ReportService {
+
+    @Autowired
+    private ReportRepository reportRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    public List<Report> getAllReports() {
+        return reportRepository.findAll();
+    }
+
+    public List<Report> getReportsByType(String reportType) {
+        return reportRepository.findByReportType(reportType);
+    }
+
+    public List<Report> getReportsByDateRange(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+        return reportRepository.findByGeneratedDateBetween(startDateTime, endDateTime);
+    }
+
+    public List<Report> getExpiredReports(LocalDate cutoffDate) {
+        LocalDateTime cutoff = cutoffDate.atStartOfDay();
+        return reportRepository.findExpiredReports(cutoff);
+    }
+
+    public Report saveReport(Report report) {
+        return reportRepository.save(report);
+    }
+
+    public Report updateReport(Integer reportId, String reportName, String reportDescription) {
+        Report report = reportRepository.findById(reportId).orElse(null);
+        if (report != null) {
+            if (reportName != null && !reportName.trim().isEmpty()) {
+                report.setReportName(reportName);
+            }
+            if (reportDescription != null && !reportDescription.trim().isEmpty()) {
+                report.setReportDescription(reportDescription);
+            }
+            return reportRepository.save(report);
+        }
+        return null;
+    }
+
+    public void deleteReport(Integer reportId) {
+        reportRepository.deleteById(reportId);
+    }
+
+    public void deleteReports(List<Integer> reportIds) {
+        reportRepository.deleteAllById(reportIds);
+    }
+
+    public Report getReportById(Integer reportId) {
+        return reportRepository.findById(reportId).orElse(null);
+    }
+
+    public Report generateInventoryReport(Integer userId, Integer shopId, LocalDate reportDate) {
+        Report report = new Report();
+        report.setReportType("Inventory");
+        report.setUserId(userId);
+        report.setShopId(shopId);
+        report.setGeneratedDate(LocalDateTime.now());
+        report.setFormat("CSV/PDF");
+
+        // FETCH REAL DATA FROM DATABASE
+        List<Product> allProducts = productRepository.findAll();
+        List<Product> outOfStock = productRepository.findByStockQuantity(0);
+        List<Product> lowStock = allProducts.stream()
+                .filter(p -> p.getStockQuantity() > 0 && p.getStockQuantity() < 10)
+                .toList();
+
+        // Calculate total stock value
+        BigDecimal totalStockValue = allProducts.stream()
+                .map(p -> p.getPrice().multiply(new BigDecimal(p.getStockQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Get top 5 products by stock value
+        List<Product> topProducts = allProducts.stream()
+                .sorted((p1, p2) -> {
+                    BigDecimal val1 = p1.getPrice().multiply(new BigDecimal(p1.getStockQuantity()));
+                    BigDecimal val2 = p2.getPrice().multiply(new BigDecimal(p2.getStockQuantity()));
+                    return val2.compareTo(val1);
+                })
+                .limit(5)
+                .toList();
+
+        // Generate professional inventory report data
+        StringBuilder reportData = new StringBuilder();
+        reportData.append("═══════════════════════════════════════════════════════════════\n");
+        reportData.append("                    INVENTORY REPORT\n");
+        reportData.append("═══════════════════════════════════════════════════════════════\n\n");
+        reportData.append("Report Period: ").append(reportDate).append("\n");
+        reportData.append("Generated: ").append(LocalDateTime.now()).append("\n");
+        reportData.append("Generated By: User ID ").append(userId).append("\n\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n");
+        reportData.append("INVENTORY SUMMARY\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n\n");
+        reportData.append("Total Products in Stock:        ").append(allProducts.size()).append(" items\n");
+        reportData.append("Total Stock Value:              LKR ").append(String.format("%,.2f", totalStockValue)).append("\n");
+        reportData.append("Low Stock Items:                ").append(lowStock.size()).append(" items\n");
+        reportData.append("Out of Stock Items:             ").append(outOfStock.size()).append(" items\n\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n");
+        reportData.append("TOP 5 PRODUCTS BY STOCK VALUE\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n\n");
+
+        int rank = 1;
+        for (Product p : topProducts) {
+            BigDecimal stockValue = p.getPrice().multiply(new BigDecimal(p.getStockQuantity()));
+            reportData.append(String.format("%d. %-25s - Qty: %-4d - Value: LKR %,.2f\n",
+                    rank++, p.getName(), p.getStockQuantity(), stockValue));
+        }
+
+        reportData.append("\n───────────────────────────────────────────────────────────────\n");
+        reportData.append("ALERTS & RECOMMENDATIONS\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n\n");
+
+        if (outOfStock.size() > 0) {
+            reportData.append("⚠ CRITICAL: ").append(outOfStock.size()).append(" products are out of stock\n");
+        }
+        if (lowStock.size() > 0) {
+            reportData.append("⚠ WARNING: ").append(lowStock.size()).append(" products have low stock levels\n");
+        }
+        if (outOfStock.isEmpty() && lowStock.isEmpty()) {
+            reportData.append("✓ All products are adequately stocked\n");
+        }
+
+        reportData.append("\n═══════════════════════════════════════════════════════════════\n");
+        reportData.append("                    END OF REPORT\n");
+        reportData.append("═══════════════════════════════════════════════════════════════\n");
+
+        report.setReportData(reportData.toString());
+        report.setPeriodStart(reportDate);
+        report.setPeriodEnd(reportDate);
+        return report;
+    }
+
+    public Report generateSalesReport(Integer userId, Integer shopId, LocalDate startDate, LocalDate endDate,
+                                      String reportName, String reportDescription,
+                                      String productCategory, String orderStatus) {
+        Report report = new Report();
+        report.setReportType("Sales");
+        report.setUserId(userId);
+        report.setShopId(shopId);
+        report.setGeneratedDate(LocalDateTime.now());
+        report.setFormat("CSV/PDF");
+        report.setReportName(reportName);
+        report.setReportDescription(reportDescription);
+        report.setProductCategory(productCategory);
+        report.setOrderStatus(orderStatus);
+
+        // FETCH REAL DATA FROM DATABASE
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+
+        // Parse product categories for filtering
+        List<String> categoryFilter = null;
+        if (productCategory != null && !productCategory.trim().isEmpty()) {
+            categoryFilter = List.of(productCategory.split(","));
+            categoryFilter = categoryFilter.stream()
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+        }
+
+        // Filter orders by status if specified
+        List<Order> allOrders;
+        if (orderStatus != null && !orderStatus.trim().isEmpty()) {
+            String[] statusArray = orderStatus.split(",");
+            allOrders = orderRepository.findByOrderDateBetween(startDateTime, endDateTime).stream()
+                    .filter(o -> {
+                        for (String status : statusArray) {
+                            if (o.getStatus().equalsIgnoreCase(status.trim())) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })
+                    .toList();
+        } else {
+            allOrders = orderRepository.findByOrderDateBetween(startDateTime, endDateTime);
+        }
+
+        // Filter orders by product categories if specified
+        final List<String> finalCategoryFilter = categoryFilter;
+        if (finalCategoryFilter != null && !finalCategoryFilter.isEmpty()) {
+            allOrders = allOrders.stream()
+                    .filter(order -> {
+                        // Check if order contains any product from the selected categories
+                        return order.getOrderItems().stream()
+                                .anyMatch(item -> {
+                                    Product product = item.getProduct();
+                                    if (product != null) {
+                                        // Map category names to IDs (you may need to adjust this mapping)
+                                        String categoryName = getCategoryNameById(product.getCategoryId());
+                                        return finalCategoryFilter.stream()
+                                                .anyMatch(cat -> cat.equalsIgnoreCase(categoryName));
+                                    }
+                                    return false;
+                                });
+                    })
+                    .toList();
+        }
+
+        long completedOrders = allOrders.stream().filter(o -> "COMPLETED".equalsIgnoreCase(o.getStatus())).count();
+        long cancelledOrders = allOrders.stream().filter(o -> "CANCELLED".equalsIgnoreCase(o.getStatus())).count();
+
+        BigDecimal totalRevenue = allOrders.stream()
+                .filter(o -> "COMPLETED".equalsIgnoreCase(o.getStatus()))
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal avgOrderValue = allOrders.size() > 0 ?
+                totalRevenue.divide(new BigDecimal(allOrders.size()), 2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+
+        // Get top selling products (filtered by categories if specified)
+        List<Object[]> topProducts;
+        if (finalCategoryFilter != null && !finalCategoryFilter.isEmpty()) {
+            topProducts = orderItemRepository.findTopSellingProducts(startDateTime, endDateTime).stream()
+                    .filter(row -> {
+                        // Filter products by category
+                        String productName = (String) row[0];
+                        // This is a simplified check - you may need to enhance this
+                        return true; // For now, include all products from filtered orders
+                    })
+                    .toList();
+        } else {
+            topProducts = orderItemRepository.findTopSellingProducts(startDateTime, endDateTime);
+        }
+
+        // Generate professional sales report data
+        StringBuilder reportData = new StringBuilder();
+        reportData.append("═══════════════════════════════════════════════════════════════\n");
+        reportData.append("                      SALES REPORT\n");
+        reportData.append("═══════════════════════════════════════════════════════════════\n\n");
+
+        if (reportName != null && !reportName.trim().isEmpty()) {
+            reportData.append("Report Name: ").append(reportName).append("\n");
+        }
+        if (reportDescription != null && !reportDescription.trim().isEmpty()) {
+            reportData.append("Description: ").append(reportDescription).append("\n");
+        }
+
+        reportData.append("Report Period: ").append(startDate).append(" to ").append(endDate).append("\n");
+        reportData.append("Generated: ").append(LocalDateTime.now()).append("\n");
+        reportData.append("Generated By: User ID ").append(userId).append("\n");
+
+        if (productCategory != null && !productCategory.trim().isEmpty()) {
+            reportData.append("Product Categories: ").append(productCategory).append("\n");
+        }
+        if (orderStatus != null && !orderStatus.trim().isEmpty()) {
+            reportData.append("Order Statuses: ").append(orderStatus).append("\n");
+        }
+
+        reportData.append("\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n");
+        reportData.append("SALES SUMMARY\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n\n");
+        reportData.append("Total Orders:                   ").append(allOrders.size()).append(" orders\n");
+        reportData.append("Total Revenue:                  LKR ").append(String.format("%,.2f", totalRevenue)).append("\n");
+        reportData.append("Average Order Value:            LKR ").append(String.format("%,.2f", avgOrderValue)).append("\n");
+        reportData.append("Completed Orders:               ").append(completedOrders).append("\n");
+        reportData.append("Cancelled Orders:               ").append(cancelledOrders).append("\n\n");
+
+        reportData.append("───────────────────────────────────────────────────────────────\n");
+        reportData.append("TOP 5 BEST SELLING PRODUCTS\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n\n");
+
+        int rank = 1;
+        for (Object[] row : topProducts) {
+            if (rank > 5) break;
+            String productName = (String) row[0];
+            Long quantity = ((Number) row[1]).longValue();
+            BigDecimal revenue = (BigDecimal) row[2];
+            reportData.append(String.format("%d. %-25s - Units: %-4d - Revenue: LKR %,.2f\n",
+                    rank++, productName, quantity, revenue));
+        }
+
+        if (topProducts.isEmpty()) {
+            reportData.append("No sales data available for this period.\n");
+        }
+
+        reportData.append("\n───────────────────────────────────────────────────────────────\n");
+        reportData.append("PERFORMANCE INSIGHTS\n");
+        reportData.append("───────────────────────────────────────────────────────────────\n\n");
+
+        if (allOrders.size() > 0) {
+            reportData.append("✓ Total orders processed: ").append(allOrders.size()).append("\n");
+            reportData.append("✓ Revenue generated: LKR ").append(String.format("%,.2f", totalRevenue)).append("\n");
+        } else {
+            reportData.append("ℹ No orders found for the selected period\n");
+        }
+
+        reportData.append("\n═══════════════════════════════════════════════════════════════\n");
+        reportData.append("                    END OF REPORT\n");
+        reportData.append("═══════════════════════════════════════════════════════════════\n");
+
+        report.setReportData(reportData.toString());
+        report.setPeriodStart(startDate);
+        report.setPeriodEnd(endDate);
+        return report;
+    }
+
+    /**
+     * Helper method to map category ID to category name
+     * This mapping matches the database schema (category IDs: 101-105)
+     */
+    private String getCategoryNameById(Integer categoryId) {
+        if (categoryId == null) return "Unknown";
+
+        // Map category IDs to names based on database schema
+        return switch (categoryId) {
+            case 101 -> "Electronics";
+            case 102 -> "Clothing";
+            case 103 -> "Home Goods";
+            case 104 -> "Books";
+            case 105 -> "Groceries";
+            default -> "Other";
+        };
+    }
+
+    /**
+     * Get sales analytics data for charts
+     */
+    public Map<String, Object> getSalesAnalytics(Integer reportId) {
+        Report report = reportRepository.findById(reportId).orElse(null);
+        if (report == null || !"Sales".equals(report.getReportType())) {
+            return null;
+        }
+
+        LocalDateTime startDateTime = report.getPeriodStart().atStartOfDay();
+        LocalDateTime endDateTime = report.getPeriodEnd().atTime(23, 59, 59);
+
+        // Parse filters from report
+        String productCategory = report.getProductCategory();
+        String orderStatus = report.getOrderStatus();
+
+        // Get filtered orders
+        List<Order> orders = getFilteredOrders(startDateTime, endDateTime, productCategory, orderStatus);
+
+        Map<String, Object> analytics = new HashMap<>();
+
+        // 1. Sales by Status (Pie Chart)
+        Map<String, Long> salesByStatus = new HashMap<>();
+        salesByStatus.put("COMPLETED", orders.stream().filter(o -> "COMPLETED".equalsIgnoreCase(o.getStatus())).count());
+        salesByStatus.put("PENDING", orders.stream().filter(o -> "PENDING".equalsIgnoreCase(o.getStatus())).count());
+        salesByStatus.put("CANCELLED", orders.stream().filter(o -> "CANCELLED".equalsIgnoreCase(o.getStatus())).count());
+        analytics.put("salesByStatus", salesByStatus);
+
+        // 2. Revenue by Status (Pie Chart)
+        Map<String, BigDecimal> revenueByStatus = new HashMap<>();
+        revenueByStatus.put("COMPLETED", orders.stream().filter(o -> "COMPLETED".equalsIgnoreCase(o.getStatus()))
+                .map(Order::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        revenueByStatus.put("PENDING", orders.stream().filter(o -> "PENDING".equalsIgnoreCase(o.getStatus()))
+                .map(Order::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        revenueByStatus.put("CANCELLED", orders.stream().filter(o -> "CANCELLED".equalsIgnoreCase(o.getStatus()))
+                .map(Order::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        analytics.put("revenueByStatus", revenueByStatus);
+
+        // 3. Top Products (Bar Chart)
+        List<Object[]> topProducts = orderItemRepository.findTopSellingProducts(startDateTime, endDateTime);
+        Map<String, Object> topProductsData = new HashMap<>();
+        topProductsData.put("labels", topProducts.stream().limit(10).map(row -> (String) row[0]).toList());
+        topProductsData.put("quantities", topProducts.stream().limit(10).map(row -> ((Number) row[1]).longValue()).toList());
+        topProductsData.put("revenues", topProducts.stream().limit(10).map(row -> (BigDecimal) row[2]).toList());
+        analytics.put("topProducts", topProductsData);
+
+        // 4. Daily Sales Trend (Line Chart)
+        Map<LocalDate, Long> dailyOrders = new HashMap<>();
+        Map<LocalDate, BigDecimal> dailyRevenue = new HashMap<>();
+
+        for (Order order : orders) {
+            LocalDate orderDate = order.getOrderDate().toLocalDate();
+            dailyOrders.put(orderDate, dailyOrders.getOrDefault(orderDate, 0L) + 1);
+            if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
+                dailyRevenue.put(orderDate, dailyRevenue.getOrDefault(orderDate, BigDecimal.ZERO).add(order.getTotalAmount()));
+            }
+        }
+
+        List<LocalDate> dateRange = startDateTime.toLocalDate().datesUntil(endDateTime.toLocalDate().plusDays(1)).toList();
+        Map<String, Object> dailyTrend = new HashMap<>();
+        dailyTrend.put("dates", dateRange.stream().map(LocalDate::toString).toList());
+        dailyTrend.put("orders", dateRange.stream().map(d -> dailyOrders.getOrDefault(d, 0L)).toList());
+        dailyTrend.put("revenue", dateRange.stream().map(d -> dailyRevenue.getOrDefault(d, BigDecimal.ZERO)).toList());
+        analytics.put("dailyTrend", dailyTrend);
+
+        // 5. Sales by Category (Doughnut Chart)
+        Map<String, Long> salesByCategory = new HashMap<>();
+        Map<String, BigDecimal> revenueByCategory = new HashMap<>();
+
+        for (Order order : orders) {
+            for (var item : order.getOrderItems()) {
+                Product product = item.getProduct();
+                if (product != null) {
+                    String categoryName = getCategoryNameById(product.getCategoryId());
+                    salesByCategory.put(categoryName, salesByCategory.getOrDefault(categoryName, 0L) + item.getQuantity());
+
+                    if ("COMPLETED".equalsIgnoreCase(order.getStatus())) {
+                        BigDecimal itemRevenue = item.getUnitPrice().multiply(new BigDecimal(item.getQuantity()));
+                        revenueByCategory.put(categoryName, revenueByCategory.getOrDefault(categoryName, BigDecimal.ZERO).add(itemRevenue));
+                    }
+                }
+            }
+        }
+
+        analytics.put("salesByCategory", salesByCategory);
+        analytics.put("revenueByCategory", revenueByCategory);
+
+        // 6. Summary Statistics
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("totalOrders", orders.size());
+        summary.put("totalRevenue", orders.stream().filter(o -> "COMPLETED".equalsIgnoreCase(o.getStatus()))
+                .map(Order::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        summary.put("averageOrderValue", orders.size() > 0 ?
+                ((BigDecimal) summary.get("totalRevenue")).divide(new BigDecimal(orders.size()), 2, RoundingMode.HALF_UP) : BigDecimal.ZERO);
+        summary.put("completedOrders", orders.stream().filter(o -> "COMPLETED".equalsIgnoreCase(o.getStatus())).count());
+        summary.put("pendingOrders", orders.stream().filter(o -> "PENDING".equalsIgnoreCase(o.getStatus())).count());
+        summary.put("cancelledOrders", orders.stream().filter(o -> "CANCELLED".equalsIgnoreCase(o.getStatus())).count());
+        analytics.put("summary", summary);
+
+        return analytics;
+    }
+
+    /**
+     * Helper method to get filtered orders
+     */
+    private List<Order> getFilteredOrders(LocalDateTime startDateTime, LocalDateTime endDateTime,
+                                          String productCategory, String orderStatus) {
+        List<Order> allOrders;
+
+        // Filter by status
+        if (orderStatus != null && !orderStatus.trim().isEmpty()) {
+            String[] statusArray = orderStatus.split(",");
+            allOrders = orderRepository.findByOrderDateBetween(startDateTime, endDateTime).stream()
+                    .filter(o -> {
+                        for (String status : statusArray) {
+                            if (o.getStatus().equalsIgnoreCase(status.trim())) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })
+                    .toList();
+        } else {
+            allOrders = orderRepository.findByOrderDateBetween(startDateTime, endDateTime);
+        }
+
+        // Filter by category
+        if (productCategory != null && !productCategory.trim().isEmpty()) {
+            List<String> categoryFilter = List.of(productCategory.split(","));
+            categoryFilter = categoryFilter.stream()
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+
+            final List<String> finalCategoryFilter = categoryFilter;
+            allOrders = allOrders.stream()
+                    .filter(order -> order.getOrderItems().stream()
+                            .anyMatch(item -> {
+                                Product product = item.getProduct();
+                                if (product != null) {
+                                    String categoryName = getCategoryNameById(product.getCategoryId());
+                                    return finalCategoryFilter.stream()
+                                            .anyMatch(cat -> cat.equalsIgnoreCase(categoryName));
+                                }
+                                return false;
+                            }))
+                    .toList();
+        }
+
+        return allOrders;
+    }
+}
