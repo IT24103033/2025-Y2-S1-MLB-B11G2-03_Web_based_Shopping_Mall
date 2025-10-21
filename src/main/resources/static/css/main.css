@@ -1,0 +1,180 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #2B2B2B;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    background-image: url('/images/hero-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 80px;
+}
+
+/* Gradient Overlay - fades the image into the page */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+            to top,
+            rgba(43, 43, 43, 0.3) 0%,
+            rgba(43, 43, 43, 0.5) 50%,
+            rgba(43, 43, 43, 0.9) 90%,
+            rgba(43, 43, 43, 1) 100%
+    );
+}
+
+.hero-content {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+}
+
+.luxury-text {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #FFCC00;
+    font-weight: 400;
+}
+
+.logo-container {
+    margin-top: 2rem;
+}
+
+.hero-logo {
+    max-width: 400px;
+    height: auto;
+}
+
+/* Welcome Section */
+.welcome-section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.welcome-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #FFCC00;
+    display: inline-block;
+    width: 100%;
+}
+
+.nova-text {
+    font-style: italic;
+    color: #FFCC00;
+}
+
+/* Action Cards */
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.action-card {
+    background-color: #3D3D3D;
+    border: 2px solid #3D3D3D;
+    border-radius: 8px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    border-color: #FFCC00;
+    background-color: #4A4A4A;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 204, 0, 0.2);
+}
+
+.card-icon {
+    width: 80px;
+    height: 80px;
+    background-color: #FFCC00;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.action-card:hover .card-icon {
+    transform: scale(1.1);
+}
+
+.card-icon img {
+    width: 40px;
+    height: 40px;
+    filter: brightness(0);
+}
+
+.action-card h3 {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-logo {
+        max-width: 280px;
+    }
+
+    .welcome-section {
+        padding: 3rem 1rem;
+    }
+
+    .action-cards {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-section {
+        height: 60vh;
+        min-height: 400px;
+    }
+}

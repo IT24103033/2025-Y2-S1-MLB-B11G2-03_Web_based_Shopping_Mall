@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+</head>
+<body>
+    <!-- Include header -->
+    <div th:replace="fragments/header :: header"></div>
+    
+    <main class="checkout-container">
+        <div class="checkout-content">
+            <h1>Checkout</h1>
+            
+            <!-- Error messages -->
+            <div th:if="${error}" class="error-message" th:text="${error}"></div>
+            <div th:if="${param.error}" class="error-message" th:text="${param.error}"></div>
+            
+            <div class="checkout-layout">
+                <!-- Order Summary Section -->
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+                    <div class="summary-items">
+                        <div th:each="item : ${cartItems}" class="summary-item">
+                            <span class="item-name" th:text="${item.product.name}">Product Name</span>
+                            <span class="item-details">
+                                <span th:text="'x' + ${item.quantity}">x1</span>
+                                <span class="item-price" th:text="'$' + ${item.product.price * item.quantity}">$10.00</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="summary-total">
+                        <strong>Total: <span th:text="'$' + ${totalAmount}">$0.00</span></strong>
+                    </div>
+                </div>
+                
+                <!-- Checkout Form Section -->
+                <div class="checkout-form">
+                    <form action="/checkout/process-web" method="post" onsubmit="return validateForm()">
+                        <!-- Customer Details -->
+                        <div class="form-section">
+                            <h3>Customer Details</h3>
+                            <div class="form-group">
+                                <label for="customerName">Full Name *</label>
+                                <input type="text" id="customerName" name="customerName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerEmail">Email Address *</label>
+                                <input type="email" id="customerEmail" name="customerEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerPhone">Phone Number *</label>
+                                <input type="tel" id="customerPhone" name="customerPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerAddress">Delivery Address *</label>
+                                <textarea id="customerAddress" name="customerAddress" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Method -->
+                        <div class="form-section">
+                            <h3>Payment Method</h3>
+                            <div class="payment-methods">
+                                <div class="payment-option">
+                                    <input type="radio" id="paymentCard" name="paymentMethod" value="card" checked onchange="toggleCardDetails()">
+                                    <label for="paymentCard">Credit/Debit Card</label>
+                                </div>
+                                <div class="payment-option">
+                                    <input type="radio" id="paymentCash" name="paymentMethod" value="cash" onchange="toggleCardDetails()">
+                                    <label for="paymentCash">Cash on Delivery</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Card Details (shown only if card is selected) -->
+                        <div class="form-section" id="cardDetailsSection">
+                            <h3>Card Details</h3>
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cardExpiry">Expiry Date</label>
+                                    <input type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/YY" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardCvv">CVV</label>
+                                    <input type="text" id="cardCvv" name="cardCvv" placeholder="123" maxlength="4">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="checkout-actions">
+                            <a href="/cart" class="back-btn">Back to Cart</a>
+                            <button type="submit" class="place-order-btn">Place Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Include footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+    
+    <script th:src="@{/js/checkout.js}"></script>
+</body>
+</html>

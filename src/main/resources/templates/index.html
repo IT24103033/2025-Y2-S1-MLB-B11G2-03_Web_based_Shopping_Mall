@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Shopping Mall</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+</head>
+<body>
+<!-- Header -->
+<div th:replace="fragments/header :: header"></div>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">
+            Experience <span class="luxury-text">Luxury</span>
+        </h1>
+        <div class="logo-container">
+            <img th:src="@{/images/nova-logo.png}" alt="Nova Shopping Mall" class="hero-logo">
+        </div>
+    </div>
+</section>
+
+<!-- Welcome Section -->
+<section class="welcome-section">
+    <h2 class="welcome-title">Welcome to <span class="nova-text">Nova</span></h2>
+
+    <div class="action-cards">
+        <div class="action-card">
+            <div class="card-icon">
+                <img th:src="@{/images/icons/shopping-cart.svg}" alt="Browse Shops">
+            </div>
+            <h3>Browse Our Shops</h3>
+        </div>
+
+        <div class="action-card">
+            <div class="card-icon">
+                <img th:src="@{/images/icons/info.svg}" alt="Learn About Us">
+            </div>
+            <h3>Learn About Us</h3>
+        </div>
+
+        <div class="action-card">
+            <div class="card-icon">
+                <img th:src="@{/images/icons/mail.svg}" alt="Reach Out">
+            </div>
+            <h3>Reach Out to Us</h3>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

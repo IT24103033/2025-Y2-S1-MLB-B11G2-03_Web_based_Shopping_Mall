@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/cart.css}">
+</head>
+<body>
+    <!-- Include header -->
+    <div th:replace="fragments/header :: header"></div>
+    
+    <main class="cart-container">
+        <div class="cart-content">
+            <h1>Shopping Cart</h1>
+            
+            <!-- Error message -->
+            <div th:if="${error}" class="error-message" th:text="${error}"></div>
+            
+            <!-- Success/Info messages -->
+            <div th:if="${param.message}" class="info-message" th:text="${param.message}"></div>
+            <div th:if="${param.error}" class="error-message" th:text="${param.error}"></div>
+            
+            <!-- Empty cart message -->
+            <div th:if="${isEmpty}" class="empty-cart">
+                <h2>Your cart is empty</h2>
+                <p>Start shopping to add items to your cart!</p>
+                
+                <!-- Quick add for testing -->
+                <div class="test-add-section">
+                    <h3>Add Test Items:</h3>
+                    <div class="test-buttons">
+                        <button onclick="addTestItem('PROD001', 1)" class="test-add-btn">Add Product 1</button>
+                        <button onclick="addTestItem('PROD002', 2)" class="test-add-btn">Add Product 2</button>
+                        <button onclick="addTestItem('PROD003', 1)" class="test-add-btn">Add Product 3</button>
+                    </div>
+                </div>
+                
+                <a href="/" class="continue-shopping-btn">Continue Shopping</a>
+            </div>
+            
+            <!-- Cart items -->
+            <div th:unless="${isEmpty}" class="cart-items">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td class="product-info">
+                                <strong th:text="${item.product.name}">Product Name</strong>
+                                <small th:text="${item.product.description}">Product description</small>
+                            </td>
+                            <td class="price" th:text="'$' + ${item.product.price}">$10.00</td>
+                            <td class="quantity-controls">
+                                <button class="qty-btn" onclick="updateQuantity(this, -1)" 
+                                        th:data-product-id="${item.productId}">-</button>
+                                <span class="quantity" th:text="${item.quantity != null ? item.quantity : 'N/A'}">1</span>
+                                <button class="qty-btn" onclick="updateQuantity(this, 1)" 
+                                        th:data-product-id="${item.productId}">+</button>
+                            </td>
+                            <td class="item-total" th:text="'$' + ${item.product.price * item.quantity}">$10.00</td>
+                            <td>
+                                <button class="remove-btn" onclick="removeItem(this)" 
+                                        th:data-product-id="${item.productId}">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Cart summary -->
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Total Items:</span>
+                        <span th:text="${totalItems}">0</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total Amount:</span>
+                        <span th:text="'$' + ${totalAmount}">$0.00</span>
+                    </div>
+                </div>
+                
+                <!-- Action buttons -->
+                <div class="cart-actions">
+                    <a href="/" class="continue-shopping-btn">Continue Shopping</a>
+                    <a href="/checkout" class="checkout-btn">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Include footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+    
+    <script th:src="@{/js/cart.js}"></script>
+</body>
+</html>
