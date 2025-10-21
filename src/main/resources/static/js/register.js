@@ -1,207 +1,188 @@
-// register.js - Professional Registration Form JavaScript
-
+// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Password visibility toggle
-    const togglePasswordBtn = document.querySelector('.toggle-password');
-    const passwordInput = document.getElementById('password');
+    const form = document.getElementById('registrationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successAlert = document.getElementById('successAlert');
 
-    if (togglePasswordBtn && passwordInput) {
-        togglePasswordBtn.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-
-            // Toggle eye icon (simple approach - you can enhance with different icons)
-            const eyeIcon = this.querySelector('.eye-icon');
-            if (type === 'text') {
-                eyeIcon.style.opacity = '0.5';
-            } else {
-                eyeIcon.style.opacity = '1';
-            }
-        });
-    }
-
-    // Password strength checker
-    const strengthFill = document.getElementById('strengthFill');
-    const strengthText = document.getElementById('strengthText');
-
-    if (passwordInput && strengthFill && strengthText) {
-        passwordInput.addEventListener('input', function() {
-            const password = this.value;
-            const strength = calculatePasswordStrength(password);
-
-            // Remove all strength classes
-            strengthFill.classList.remove('weak', 'medium', 'strong');
-            strengthText.classList.remove('weak', 'medium', 'strong');
-
-            if (password.length === 0) {
-                strengthFill.style.width = '0%';
-                strengthText.textContent = '';
-                return;
-            }
-
-            if (strength.score < 3) {
-                strengthFill.classList.add('weak');
-                strengthText.classList.add('weak');
-                strengthText.textContent = 'Weak password';
-            } else if (strength.score < 5) {
-                strengthFill.classList.add('medium');
-                strengthText.classList.add('medium');
-                strengthText.textContent = 'Medium strength';
-            } else {
-                strengthFill.classList.add('strong');
-                strengthText.classList.add('strong');
-                strengthText.textContent = 'Strong password';
-            }
-        });
-    }
-
-    // Form validation enhancement
-    const form = document.querySelector('.registration-form');
-    if (form) {
-        const inputs = form.querySelectorAll('input[required], select[required]');
-
-        inputs.forEach(input => {
-            // Real-time validation feedback
-            input.addEventListener('blur', function() {
-                validateField(this);
-            });
-
-            // Remove error styling on input
-            input.addEventListener('input', function() {
-                if (this.classList.contains('error')) {
-                    this.classList.remove('error');
-                }
-            });
-        });
-
-        // Form submission validation
-        form.addEventListener('submit', function(e) {
-            let isValid = true;
-
-            inputs.forEach(input => {
-                if (!validateField(input)) {
-                    isValid = false;
-                }
-            });
-
-            if (!isValid) {
-                e.preventDefault();
-                // Scroll to first error
-                const firstError = form.querySelector('.error');
-                if (firstError) {
-                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-        });
-    }
-
-    // Smooth animations for form groups
-    const formGroups = document.querySelectorAll('.form-group');
-    formGroups.forEach((group, index) => {
-        group.style.opacity = '0';
-        group.style.transform = 'translateY(10px)';
-
+    // Auto-hide success message after 5 seconds
+    if (successAlert) {
         setTimeout(() => {
-            group.style.transition = 'all 0.4s ease';
-            group.style.opacity = '1';
-            group.style.transform = 'translateY(0)';
-        }, 100 * index);
-    });
-});
-
-/**
- * Calculate password strength
- * @param {string} password - The password to evaluate
- * @returns {object} - Object containing score and feedback
- */
-function calculatePasswordStrength(password) {
-    let score = 0;
-
-    if (!password) return { score: 0 };
-
-    // Length check
-    if (password.length >= 8) score++;
-    if (password.length >= 12) score++;
-
-    // Character variety checks
-    if (/[a-z]/.test(password)) score++; // lowercase
-    if (/[A-Z]/.test(password)) score++; // uppercase
-    if (/[0-9]/.test(password)) score++; // numbers
-    if (/[^a-zA-Z0-9]/.test(password)) score++; // special characters
-
-    return { score: score };
-}
-
-/**
- * Validate individual form field
- * @param {HTMLElement} field - The form field to validate
- * @returns {boolean} - Whether the field is valid
- */
-function validateField(field) {
-    const value = field.value.trim();
-    let isValid = true;
-
-    // Check if required field is empty
-    if (field.hasAttribute('required') && !value) {
-        isValid = false;
+            successAlert.style.opacity = '0';
+            successAlert.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 500);
+        }, 5000);
     }
 
-    // Email validation
-    if (field.type === 'email' && value) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-            isValid = false;
+    // Get all input fields
+    const firstNameInput = document.getElementById('first_name');
+    const lastNameInput = document.getElementById('last_name');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const roleSelect = document.getElementById('role');
+
+    // Validation patterns
+    const patterns = {
+        first_name: /^[a-zA-Z\s]{2,50}$/,
+        last_name: /^[a-zA-Z\s]{2,50}$/,
+        username: /^[a-zA-Z0-9_]{3,20}$/,
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        password: /^.{6,}$/
+    };
+
+    // Error messages
+    const errorMessages = {
+        first_name: {
+            empty: 'First name is required',
+            invalid: 'First name must be 2-50 characters and contain only letters'
+        },
+        last_name: {
+            empty: 'Last name is required',
+            invalid: 'Last name must be 2-50 characters and contain only letters'
+        },
+        username: {
+            empty: 'Username is required',
+            invalid: 'Username must be 3-20 characters (letters, numbers, underscore only)'
+        },
+        email: {
+            empty: 'Email is required',
+            invalid: 'Please enter a valid email address'
+        },
+        password: {
+            empty: 'Password is required',
+            invalid: 'Password must be at least 6 characters long'
+        },
+        role: {
+            empty: 'Please select a role'
+        }
+    };
+
+    // Add real-time validation on blur
+    const inputs = [firstNameInput, lastNameInput, usernameInput, emailInput, passwordInput, roleSelect];
+
+    inputs.forEach(input => {
+        // Validate on blur (when user leaves the field)
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+
+        // Clear error on input
+        input.addEventListener('input', function() {
+            clearError(this);
+        });
+    });
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default submission first
+
+        let isValid = true;
+        let firstErrorField = null;
+
+        // Validate all fields
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+                if (!firstErrorField) {
+                    firstErrorField = input;
+                }
+            }
+        });
+
+        if (!isValid) {
+            // Scroll to first error and focus
+            if (firstErrorField) {
+                firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstErrorField.focus();
+
+                // Add shake animation to the form
+                form.classList.add('shake');
+                setTimeout(() => {
+                    form.classList.remove('shake');
+                }, 500);
+            }
+        } else {
+            // All validations passed, submit the form
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registering...';
+            form.submit();
+        }
+    });
+
+    // Validate individual field
+    function validateField(field) {
+        const fieldId = field.id;
+        const fieldValue = field.value.trim();
+        const errorElement = document.getElementById(fieldId + '_error');
+
+        // Check if field is empty
+        if (fieldValue === '' || (fieldId === 'role' && fieldValue === '')) {
+            showError(field, errorElement, errorMessages[fieldId].empty);
+            return false;
+        }
+
+        // Check if field has a pattern and validate it
+        if (patterns[fieldId]) {
+            if (!patterns[fieldId].test(fieldValue)) {
+                showError(field, errorElement, errorMessages[fieldId].invalid);
+                return false;
+            }
+        }
+
+        // If validation passes, mark as success
+        markSuccess(field);
+        clearError(field);
+        return true;
+    }
+
+    // Show error message
+    function showError(field, errorElement, message) {
+        field.classList.remove('success');
+        field.classList.add('error');
+
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
         }
     }
 
-    // Password validation (minimum 6 characters)
-    if (field.type === 'password' && value && value.length < 6) {
-        isValid = false;
-    }
-
-    // Select validation
-    if (field.tagName === 'SELECT' && (!value || value === '')) {
-        isValid = false;
-    }
-
-    // Add/remove error class
-    if (!isValid) {
-        field.classList.add('error');
-        field.style.borderColor = '#f56565';
-    } else {
+    // Clear error message
+    function clearError(field) {
         field.classList.remove('error');
-        field.style.borderColor = '';
+        const errorElement = document.getElementById(field.id + '_error');
+
+        if (errorElement) {
+            errorElement.textContent = '';
+            errorElement.classList.remove('show');
+        }
     }
 
-    return isValid;
-}
+    // Mark field as success
+    function markSuccess(field) {
+        field.classList.remove('error');
+        field.classList.add('success');
+    }
 
-/**
- * Show success message (can be used after successful registration)
- * @param {string} message - The success message to display
- */
-function showSuccessMessage(message) {
-    const container = document.querySelector('.container');
-    const successDiv = document.createElement('div');
-    successDiv.className = 'success-message';
-    successDiv.textContent = message;
-    successDiv.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #48bb78;
-    color: white;
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
-    z-index: 1000;
-    animation: slideIn 0.3s ease;
-  `;
+    // Prevent form resubmission on refresh
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
 
-    document.body.appendChild(successDiv);
+    // Prevent spaces in username
+    if (usernameInput) {
+        usernameInput.addEventListener('keypress', function(e) {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        });
+    }
 
-    setTimeout(() => {
-        successDiv.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => successDiv.remove(), 300);
-    }, 3000);
-}
+    // Email validation on input
+    if (emailInput) {
+        emailInput.addEventListener('input', function() {
+            this.value = this.value.toLowerCase().trim();
+        });
+    }
+});

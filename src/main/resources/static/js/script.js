@@ -7,3 +7,4 @@ function goRegister() {
     // Redirect to register page
     window.location.href = "register.html";
 }
+

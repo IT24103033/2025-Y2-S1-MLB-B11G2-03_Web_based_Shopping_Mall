@@ -27,7 +27,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute User user) {
+    public String register(@ModelAttribute User user, Model model) {
+
+        if (userService.existsByEmail(user.getEmail())) {
+            model.addAttribute("errorMessage", "Email already registered! Please use a different email.");
+            model.addAttribute("user", user);
+            return "register";
+        }
         userService.registerUser(user);
         return "redirect:/login?success";
     }
@@ -35,6 +41,11 @@ public class AuthController {
     @GetMapping("/login")
     public String showLoginForm() {
         return "login";
+    }
+
+    @GetMapping("/home")
+    public String showHomePage() {
+        return "index";
     }
 
 
@@ -94,4 +105,6 @@ public class AuthController {
             return "profile";
         }
     }
+
+
 }

@@ -7,7 +7,7 @@ import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.util.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -67,4 +67,28 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public long getTotalUsers() {
+        return userRepository.count();
+    }
+
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ValidationException("User not found"));
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
 }

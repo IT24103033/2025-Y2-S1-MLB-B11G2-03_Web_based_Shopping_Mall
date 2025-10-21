@@ -25,7 +25,10 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         for (GrantedAuthority authority : authorities) {
             String role = authority.getAuthority();
             if (role.equals("ROLE_CUSTOMER")) {
-                redirectUrl = "/index";
+                redirectUrl = "/home";
+                break;
+            } else if (role.equals("ROLE_SHOP_OWNER")) {
+                redirectUrl = "/home";
                 break;
             } else if (role.equals("ROLE_ADMIN")) {
                 redirectUrl = "/admin/dashboard";
@@ -36,3 +39,4 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         response.sendRedirect(redirectUrl);
     }
 }
+

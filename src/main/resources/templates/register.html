@@ -1,50 +1,75 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Registration</title>
   <link rel="stylesheet" th:href="@{/css/register.css}">
 </head>
 <body>
+<div class="registration-container">
+  <h2>User Registration</h2>
+
+  <!-- Success Message -->
+  <div th:if="${successMessage}" class="alert alert-success" id="successAlert">
+    <span class="alert-icon">✓</span>
+    <span th:text="${successMessage}">Registration successful!</span>
+  </div>
+
+  <!-- Error Message from Server -->
+  <div th:if="${errorMessage}" class="alert alert-error">
+    <span class="alert-icon">✕</span>
+    <span th:text="${errorMessage}">An error occurred!</span>
+  </div>
+
+  <form th:action="@{/register}" th:object="${user}" method="post" id="registrationForm">
+
+    <div class="form-group">
+      <label for="first_name">First Name: <span class="required">*</span></label>
+      <input type="text" id="first_name" th:field="*{first_name}" placeholder="Enter your first name">
+      <span class="error-message" id="first_name_error"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="last_name">Last Name: <span class="required">*</span></label>
+      <input type="text" id="last_name" th:field="*{last_name}" placeholder="Enter your last name">
+      <span class="error-message" id="last_name_error"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="username">Username: <span class="required">*</span></label>
+      <input type="text" id="username" th:field="*{username}" placeholder="Choose a username">
+      <span class="error-message" id="username_error"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email: <span class="required">*</span></label>
+      <input type="email" id="email" th:field="*{email}" placeholder="your.email@example.com">
+      <span class="error-message" id="email_error"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password: <span class="required">*</span></label>
+      <input type="password" id="password" th:field="*{password}" placeholder="Create a strong password">
+      <span class="error-message" id="password_error"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="role">Role: <span class="required">*</span></label>
+      <select id="role" th:field="*{role}">
+        <option value="">--Select Role--</option>
+        <option value="CUSTOMER">Customer</option>
+        <option value="SHOP_OWNER">Shop Owner</option>
+      </select>
+      <span class="error-message" id="role_error"></span>
+    </div>
+
+    <button type="submit" id="submitBtn">Register</button>
+    <a href="login">Already have an account?</a>
+  </form>
+</div>
+
 <script th:src="@{/js/register.js}"></script>
-<h2>User Registration</h2>
-<form th:action="@{/register}" th:object="${user}" method="post">
-  <!-- First Name -->
-  <label for="first_name">First Name:</label>
-  <input type="text" id="first_name" th:field="*{first_name}" placeholder="First Name" required>
-  <br><br>
-
-  <!-- Last Name -->
-  <label for="last_name">Last Name:</label>
-  <input type="text" id="last_name" th:field="*{last_name}" placeholder="Last Name" required>
-  <br><br>
-
-  <!-- Username -->
-  <label for="username">Username:</label>
-  <input type="text" id="username" th:field="*{username}" placeholder="Username" required>
-  <br><br>
-
-  <!-- Email -->
-  <label for="email">Email:</label>
-  <input type="email" id="email" th:field="*{email}" placeholder="Email" required>
-  <br><br>
-
-  <!-- Password -->
-  <label for="password">Password:</label>
-  <input type="password" id="password" th:field="*{password}" placeholder="Password" required>
-  <br><br>
-
-  <!-- Role Selection -->
-  <label for="role">Role:</label>
-  <select id="role" th:field="*{role}" required>
-    <option th:value="' '">--Select Role--</option>
-    <option th:value="CUSTOMER">Customer</option>
-    <option th:value="SHOP_OWNER">Shop Owner</option>
-  </select>
-  <br><br>
-
-  <!-- Submit Button -->
-  <button type="submit">Register</button>
-</form>
 </body>
 </html>

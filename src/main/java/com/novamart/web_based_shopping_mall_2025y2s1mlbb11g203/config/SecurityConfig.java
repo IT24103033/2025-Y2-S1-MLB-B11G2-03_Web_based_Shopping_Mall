@@ -15,20 +15,18 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    public SecurityConfig(CustomLoginSuccessHandler customLoginSuccessHandler) {
+    public SecurityConfig(CustomLoginSuccessHandler customLoginSuccessHandler, UserDetailsServiceImpl userDetailsService) {
         this.customLoginSuccessHandler = customLoginSuccessHandler;
+        this.userDetailsService = userDetailsService;
     }
-
-
-    private UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
@@ -41,12 +39,12 @@ public class SecurityConfig {
                         .requestMatchers("/shop/**").hasAnyRole("SHOP_OWNER", "ADMIN")
                         .requestMatchers("/", "/register", "/login", "/forgot-password").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/", "/register", "/login").permitAll()
+                        .requestMatchers("/home").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .usernameParameter("email")  // Match your login form's email field
+                        .usernameParameter("email")  // Match the login form's email field
                         .successHandler(customLoginSuccessHandler)
                         .permitAll()
                 )
