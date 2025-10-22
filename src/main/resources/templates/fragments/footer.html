@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<!-- Footer Fragment -->
+<footer th:fragment="footer" class="main-footer">
+    <div class="footer-container">
+        <div class="footer-logo">
+            <img th:src="@{/images/nova-logo-small.png}" alt="Nova Shopping Mall">
+        </div>
+
+        <nav class="footer-nav">
+            <a th:href="@{/}" class="footer-link">Home</a>
+            <a th:href="@{/about}" class="footer-link">About Us</a>
+            <a th:href="@{/shops}" class="footer-link">Our Shops</a>
+            <a th:href="@{/orders}" class="footer-link">Your Orders</a>
+            <a th:href="@{/contact}" class="footer-link">Contact Us</a>
+        </nav>
+
+        <div class="footer-contact">
+            <div class="contact-item">
+                <img th:src="@{/images/icons/phone.svg}" alt="Phone" class="contact-icon">
+                <span>+94 123 456 789</span>
+            </div>
+            <div class="contact-item">
+                <img th:src="@{/images/icons/location.svg}" alt="Location" class="contact-icon">
+                <span>69/420, Chill Road, Colombo</span>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,186 @@
+/* Header Styles */
+.main-header {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 1400px;
+    background-color: #3D3D3D;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.main-header:hover {
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+/* Logo Section */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.logo-nova {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #FFCC00;
+    font-style: italic;
+}
+
+.logo-subtitle {
+    font-size: 0.75rem;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+/* Navigation Menu */
+.nav-menu {
+    display: flex;
+    gap: 2.5rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 400;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #FFCC00;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #FFCC00;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Header Action Buttons */
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.icon-btn {
+    width: 45px;
+    height: 45px;
+    background-color: transparent;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.icon-btn img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    transition: filter 0.3s ease;
+}
+
+.icon-btn:hover {
+    background-color: rgba(255, 204, 0, 0.1);
+    border-color: #FFCC00;
+}
+
+.icon-btn:hover img {
+    filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(5deg);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .main-header {
+        width: 98%;
+        top: 10px;
+        padding: 0.8rem 1.5rem;
+    }
+
+    .nav-menu {
+        gap: 1.5rem;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+    }
+
+    .logo-text {
+        display: none;
+    }
+
+    .nav-menu {
+        display: none;
+    }
+
+    .header-actions {
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    /* You can add a hamburger menu here for mobile */
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        top: 5px;
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon-btn img {
+        width: 20px;
+        height: 20px;
+    }
+}

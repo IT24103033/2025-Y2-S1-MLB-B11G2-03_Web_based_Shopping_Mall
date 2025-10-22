@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Successful - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .success-icon {
+            font-size: 4em;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .success-title {
+            color: #28a745;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        
+        .order-id {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+            color: #007bff;
+        }
+        
+        .success-message {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .success-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .success-btn {
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .continue-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .continue-btn:hover {
+            background: #0056b3;
+        }
+        
+        .cart-btn {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .cart-btn:hover {
+            background: #545b62;
+        }
+        
+        @media (max-width: 768px) {
+            .success-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include header -->
+    <div th:replace="fragments/header :: header"></div>
+    
+    <main class="success-container">
+        <div class="success-icon">✅</div>
+        <h1 class="success-title">Order Placed Successfully!</h1>
+        
+        <div class="order-id">
+            Order ID: <strong th:text="${orderId}">ORDER_12345</strong>
+        </div>
+        
+        <div class="success-message">
+            <p>Thank you for your order! We have received your order and will process it shortly.</p>
+            <p>You will receive a notification email with order details and tracking information.</p>
+            <p>If you have any questions, please contact our customer service.</p>
+        </div>
+        
+        <div class="success-actions">
+            <a href="/" class="success-btn continue-btn">Continue Shopping</a>
+            <a href="/cart" class="success-btn cart-btn">View Cart</a>
+        </div>
+    </main>
+    
+    <!-- Include footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications Test - NovaMart</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .message { background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Notifications Test Page</h1>
+        
+        <div class="message" th:if="${message}">
+            <p th:text="${message}">Test message</p>
+        </div>
+        
+        <p>User ID: <span th:text="${userId}">TEST_USER</span></p>
+        <p>Notifications count: <span th:text="${#lists.size(notifications)}">0</span></p>
+        
+        <div th:if="${notifications.isEmpty()}">
+            <p>No notifications to display (this is expected for a test)</p>
+        </div>
+        
+        <div th:if="${!notifications.isEmpty()}">
+            <h2>Notifications:</h2>
+            <div th:each="notification : ${notifications}">
+                <p th:text="${notification.message}">Notification message</p>
+            </div>
+        </div>
+        
+        <p><a href="/">Return to Home</a></p>
+    </div>
+</body>
+</html>

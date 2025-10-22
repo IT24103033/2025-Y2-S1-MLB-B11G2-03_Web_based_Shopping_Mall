@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+</head>
+<body class="register-body">
+<div class="register-container">
+    <div class="logo-section">
+        <img th:src="@{/images/nova-logo.png}" alt="NovaMart Logo" class="register-logo">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join NovaMart today</p>
+    </div>
+
+    <!-- Success Message -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <span th:text="${successMessage}">Registration successful!</span>
+    </div>
+
+    <!-- Error Message -->
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <span th:text="${errorMessage}">An error occurred!</span>
+    </div>
+
+    <!-- Registration Form -->
+    <form th:action="@{/register}" th:object="${user}" method="post" class="register-form">
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="firstName">First Name <span class="required">*</span></label>
+                <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name <span class="required">*</span></label>
+                <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username <span class="required">*</span></label>
+            <input type="text" id="username" th:field="*{username}" placeholder="Choose a unique username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email <span class="required">*</span></label>
+            <input type="email" id="email" th:field="*{email}" placeholder="your.email@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password <span class="required">*</span></label>
+            <input type="password" id="password" th:field="*{password}" placeholder="Create a strong password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number">
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" th:field="*{address}" placeholder="Enter your address" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="role">Register as <span class="required">*</span></label>
+            <select id="role" th:field="*{role}" required>
+                <option value="">--Select Role--</option>
+                <option value="CUSTOMER">Customer</option>
+                <option value="SHOP_OWNER">Shop Owner</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-register">Register</button>
+    </form>
+
+    <div class="login-link">
+        <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
+    </div>
+</div>
+</body>
+</html>

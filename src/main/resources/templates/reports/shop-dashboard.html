@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop Owner Dashboard - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <style>
+        .shop-section {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+        }
+
+        .shop-section h2 {
+            color: #00ff00;
+            margin: 0 0 1rem 0;
+        }
+
+        .report-form {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            margin: 1rem auto;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            max-width: 1200px;
+        }
+
+        .report-form h3 {
+            color: #333;
+            margin: 0 0 1rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            color: #333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .reports-table {
+            width: 100%;
+            max-width: 1200px;
+            margin: 1rem auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .reports-table th, .reports-table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .reports-table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+            margin: 0 0.25rem;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .dashboard {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem auto;
+            max-width: 1200px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<!-- Include header -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="dashboard">
+    <div class="shop-section">
+        <h2>🏪 Shop Owner Dashboard</h2>
+        <p>Generate and manage reports for your shop. Create inventory and sales reports.</p>
+    </div>
+
+    <h2>Generate New Reports</h2>
+
+    <!-- Inventory Report Form (AJAX) -->
+    <form id="inventory-report-form" class="report-form">
+        <h3>📦 Inventory Report</h3>
+        <p>Generate a comprehensive inventory report for your shop.</p>
+
+        <input type="hidden" id="inventory-user-id" name="userId" th:value="${userId}">
+
+        <div class="form-group">
+            <label>Shop ID (Optional):</label>
+            <input type="number" id="inventory-shop-id" name="shopId" placeholder="Enter shop ID (leave empty for all)" min="1">
+            <small style="color: #666; display: block; margin-top: 0.25rem;">Enter the shop ID this report is for</small>
+        </div>
+
+        <div class="form-group">
+            <label>Report Date (Stock as of):</label>
+            <input type="date" id="inventory-report-date" name="reportDate" required>
+            <small style="color: #666; display: block; margin-top: 0.25rem;">Select the date to check available stock levels</small>
+        </div>
+
+        <button type="submit" class="btn-success">Generate Inventory Report</button>
+    </form>
+
+    <!-- Sales Report Form (AJAX) -->
+    <form id="sales-report-form" class="report-form">
+        <h3>💰 Sales Report</h3>
+        <p>Generate sales analytics for a specific date range.</p>
+
+        <input type="hidden" id="sales-user-id" name="userId" th:value="${userId}">
+
+        <div class="form-group">
+            <label>Shop ID (Optional):</label>
+            <input type="number" id="sales-shop-id" name="shopId" placeholder="Enter shop ID (leave empty for all)" min="1">
+            <small style="color: #666; display: block; margin-top: 0.25rem;">Enter the shop ID this report is for</small>
+        </div>
+
+        <div class="form-group">
+            <label>Report Name:</label>
+            <input type="text" id="sales-report-name" name="reportName" placeholder="e.g., Monthly Sales Report" required>
+        </div>
+
+        <div class="form-group">
+            <label>Report Description:</label>
+            <textarea id="sales-report-description" name="reportDescription" rows="3"
+                      placeholder="Brief description of this report..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Start Date:</label>
+            <input type="date" id="sales-start-date" name="startDate" required>
+        </div>
+
+        <div class="form-group">
+            <label>End Date:</label>
+            <input type="date" id="sales-end-date" name="endDate" required>
+        </div>
+
+        <div class="form-group">
+            <label>Product Categories (Optional):</label>
+            <select id="sales-product-categories" name="productCategories" multiple>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Home Goods">Home Goods</option>
+                <option value="Books">Books</option>
+                <option value="Groceries">Groceries</option>
+            </select>
+            <small style="color: #666; display: block; margin-top: 0.25rem;">Hold Ctrl/Cmd to select multiple. Leave empty for all.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Order Statuses (Optional):</label>
+            <select id="sales-order-statuses" name="orderStatuses" multiple>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <small style="color: #666; display: block; margin-top: 0.25rem;">Hold Ctrl/Cmd to select multiple. Leave empty for all.</small>
+        </div>
+
+        <button type="submit" class="btn-success">Generate Sales Report</button>
+    </form>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Generating report...</p>
+    </div>
+
+    <h2>Your Reports</h2>
+    <table class="reports-table">
+        <thead>
+        <tr>
+            <th>Report ID</th>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Generated Date</th>
+            <th>Period</th>
+            <th>Format</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="report : ${reports}">
+            <td th:text="${report.reportId}"></td>
+            <td th:text="${report.reportType}"></td>
+            <td th:text="${report.reportName} ?: 'N/A'"></td>
+            <td th:text="${#temporals.format(report.generatedDate, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${report.periodStart} + ' to ' + ${report.periodEnd}"></td>
+            <td th:text="${report.format}"></td>
+            <td>
+                <a th:href="@{'/reports/view/' + ${report.reportId} + '?userRole=shop'}" class="btn" style="background: #007bff; color: white;">View</a>
+                <a th:href="@{'/reports/edit/' + ${report.reportId} + '?userRole=shop'}" class="btn" style="background: #28a745; color: white;">Edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${reports.empty}" class="alert alert-info">
+        <p>No reports found. Generate some reports to get started!</p>
+    </div>
+</main>
+
+<!-- Include footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/script.js}"></script>
+<script>
+// AJAX form submission for inventory report
+document.getElementById('inventory-report-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const userId = document.getElementById('inventory-user-id').value;
+    const shopId = document.getElementById('inventory-shop-id').value;
+    const reportDate = document.getElementById('inventory-report-date').value;
+    
+    document.getElementById('loading-overlay').style.display = 'flex';
+    
+    fetch('/api/reports/generate/inventory?' + new URLSearchParams({
+        reportDate: reportDate,
+        shopId: shopId || ''
+    }), {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loading-overlay').style.display = 'none';
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        document.getElementById('loading-overlay').style.display = 'none';
+        alert('Error generating report: ' + error);
+    });
+});
+
+// AJAX form submission for sales report
+document.getElementById('sales-report-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const reportName = document.getElementById('sales-report-name').value;
+    const reportDescription = document.getElementById('sales-report-description').value;
+    const startDate = document.getElementById('sales-start-date').value;
+    const endDate = document.getElementById('sales-end-date').value;
+    const shopId = document.getElementById('sales-shop-id').value;
+    
+    const categories = Array.from(document.getElementById('sales-product-categories').selectedOptions).map(opt => opt.value);
+    const statuses = Array.from(document.getElementById('sales-order-statuses').selectedOptions).map(opt => opt.value);
+    
+    document.getElementById('loading-overlay').style.display = 'flex';
+    
+    const params = new URLSearchParams({
+        reportName: reportName,
+        reportDescription: reportDescription,
+        startDate: startDate,
+        endDate: endDate
+    });
+    
+    if (shopId) params.append('shopId', shopId);
+    if (categories.length > 0) params.append('productCategory', categories.join(','));
+    if (statuses.length > 0) params.append('orderStatus', statuses.join(','));
+    
+    fetch('/api/reports/generate/sales?' + params, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loading-overlay').style.display = 'none';
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        document.getElementById('loading-overlay').style.display = 'none';
+        alert('Error generating report: ' + error);
+    });
+});
+
+// Set default date to today
+document.getElementById('inventory-report-date').valueAsDate = new Date();
+document.getElementById('sales-end-date').valueAsDate = new Date();
+
+// Set default start date to 30 days ago
+const startDate = new Date();
+startDate.setDate(startDate.getDate() - 30);
+document.getElementById('sales-start-date').valueAsDate = startDate;
+</script>
+</body>
+</html>

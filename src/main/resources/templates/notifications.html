@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/notifications-page.css}">
+</head>
+<body>
+    <!-- Include header -->
+    <div th:replace="fragments/header :: header"></div>
+
+    <main class="notifications-page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Your Notifications</h1>
+                <p class="page-subtitle">Stay updated with your recent activities</p>
+            </div>
+
+            <!-- Error message (if any validation errors occurred) -->
+            <div th:if="${error}" class="error-notification">
+                <div class="error-icon">⚠️</div>
+                <h2>Unable to Load Notifications</h2>
+                <p th:text="${error}">Error message will appear here</p>
+                <a th:href="@{/}" class="cta-button">Return Home</a>
+            </div>
+
+            <!-- Empty state (no errors, just no notifications) -->
+            <div th:if="${error == null && notifications.isEmpty()}" class="no-notifications">
+                <div class="empty-icon">🔔</div>
+                <h2>No notifications yet</h2>
+                <p>When you place orders or have account activities, you'll see notifications here.</p>
+                <a th:href="@{/cart}" class="cta-button">Start Shopping</a>
+            </div>
+
+            <!-- Notifications list (only show if no errors and notifications exist) -->
+            <div th:if="${error == null && !notifications.isEmpty()}" class="notifications-container">
+                <div class="notifications-count">
+                    <span th:text="${#lists.size(notifications)}">0</span> recent notifications
+                </div>
+                
+                <div class="notifications-list">
+                    <div th:each="notification : ${notifications}" class="notification-item">
+                        <div class="notification-icon">
+                            <span th:if="${#strings.contains(notification.message, 'order')}">📦</span>
+                            <span th:unless="${#strings.contains(notification.message, 'order')}">🔔</span>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-message" th:text="${notification.message}">
+                                Notification message content
+                            </div>
+                            <div class="notification-time">
+                                <span th:text="${#temporals.format(notification.createdDate, 'MMM dd, yyyy')}">Oct 03, 2025</span>
+                                at
+                                <span th:text="${#temporals.format(notification.createdDate, 'HH:mm')}">14:30</span>
+                            </div>
+                        </div>
+                        <div class="notification-status">
+                            <span th:if="${notification.readDate == null}" class="status-unread">New</span>
+                            <span th:if="${notification.readDate != null}" class="status-read">Read</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action buttons -->
+                <div class="notifications-actions">
+                    <a th:href="@{/}" class="btn btn-secondary">Continue Shopping</a>
+                    <a th:href="@{/orders}" class="btn btn-primary">View Orders</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

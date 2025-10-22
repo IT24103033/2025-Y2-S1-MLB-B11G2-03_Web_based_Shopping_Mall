@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body class="profile-body">
+<div class="profile-container">
+    <h1>My Profile</h1>
+    
+    <!-- Success Messages -->
+    <div th:if="${param.success}" class="alert alert-success">
+        Profile updated successfully!
+    </div>
+    <div th:if="${param.passwordChanged}" class="alert alert-success">
+        Password changed successfully!
+    </div>
+    
+    <!-- Error Messages -->
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <span th:text="${errorMessage}">Error!</span>
+    </div>
+    <div th:if="${error}" class="alert alert-error">
+        <span th:text="${error}">Error!</span>
+    </div>
+    
+    <!-- Profile Information -->
+    <div class="profile-info">
+        <h2>Profile Information</h2>
+        <form th:action="@{/profile}" th:object="${user}" method="post" class="profile-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" th:field="*{username}" readonly>
+                <small>Username cannot be changed</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" th:field="*{email}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" id="phoneNumber" th:field="*{phoneNumber}">
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" th:field="*{address}" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Role</label>
+                <input type="text" th:value="${user.role}" readonly>
+                <small>Role cannot be changed</small>
+            </div>
+            
+            <button type="submit" class="btn-primary">Update Profile</button>
+        </form>
+    </div>
+    
+    <!-- Change Password -->
+    <div class="password-section">
+        <h2>Change Password</h2>
+        <form th:action="@{/change-password}" method="post" class="password-form">
+            <div class="form-group">
+                <label for="oldPassword">Old Password</label>
+                <input type="password" id="oldPassword" name="oldPassword" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <button type="submit" class="btn-secondary">Change Password</button>
+        </form>
+    </div>
+    
+    <!-- Navigation Links -->
+    <div class="nav-links">
+        <a th:href="@{/}" class="btn-link">Back to Home</a>
+        <a th:href="@{/logout}" class="btn-link btn-logout">Logout</a>
+    </div>
+</div>
+</body>
+</html>

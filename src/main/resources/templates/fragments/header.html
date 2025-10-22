@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<!-- Header Fragment -->
+<header th:fragment="header" class="main-header">
+    <div class="header-container">
+        <div class="logo">
+            <img th:src="@{/images/nova-logo.png}" alt="Nova Shopping Mall">
+        </div>
+
+        <nav class="nav-menu">
+            <a th:href="@{/}" class="nav-link">Home</a>
+            <a th:href="@{/about}" class="nav-link">About Us</a>
+            <a th:href="@{/shops}" class="nav-link">Our Shops</a>
+            <a th:href="@{/orders}" class="nav-link">Your Orders</a>
+            <a th:href="@{/contact}" class="nav-link">Contact Us</a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="icon-btn" aria-label="Profile">
+                <img th:src="@{/images/icons/user.svg}" alt="Profile">
+            </button>
+            <a th:href="@{/notifications}" class="icon-btn" aria-label="Notifications">
+                <img th:src="@{/images/icons/bell.svg}" alt="Notifications">
+            </a>
+            <a th:href="@{/cart}" class="icon-btn" aria-label="Cart">
+                <img th:src="@{/images/icons/cart.svg}" alt="Cart">
+            </a>
+        </div>
+    </div>
+</header>
+</body>
+</html>

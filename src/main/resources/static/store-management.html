@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Store Management - NovaMart</title>
+    <link rel="stylesheet" href="/css/store-management.css" />
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-icon">🏬</span>
+            <span class="brand-text">NovaMart Admin</span>
+        </div>
+        <nav class="menu">
+            <a class="menu-item active" href="/store-management.html">
+                <span>Store Management</span>
+            </a>
+            <a class="menu-item" href="/">
+                <span>Back to Home</span>
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <small>v1.0.0</small>
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="topbar">
+            <div class="search">
+                <input id="search" type="text" placeholder="Search stores..." />
+            </div>
+            <div class="top-actions">
+                <button id="open-create" class="primary">+ New Store</button>
+            </div>
+        </header>
+
+        <section class="content">
+            <div class="cards">
+                <div class="card">
+                    <div class="card-title">Total Stores</div>
+                    <div class="card-value" id="metric-total">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Categories</div>
+                    <div class="card-value" id="metric-categories">0</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>Stores</h2>
+                </div>
+                <div class="table-wrap">
+                    <table class="table" id="stores-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 36px;">#</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th style="width: 160px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stores-tbody">
+                        </tbody>
+                    </table>
+                    <div class="empty" id="empty-state" style="display:none;">No stores found.</div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="modal" id="store-modal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+        <div class="modal-head">
+            <h3 id="modal-title">Create Store</h3>
+            <button class="icon-btn" id="close-modal" aria-label="Close">✕</button>
+        </div>
+        <form id="store-form">
+            <input type="hidden" id="store-id" />
+            <div class="form-row">
+                <label for="storeName">Store Name</label>
+                <input id="storeName" name="storeName" type="text" required placeholder="e.g. Alpha Mart" />
+                <div class="error-msg" id="error-storeName" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+                <label for="category">Category</label>
+                <input id="category" name="category" type="text" placeholder="e.g. Grocery" />
+                <div class="error-msg" id="error-category" aria-live="polite"></div>
+            </div>
+            <div class="form-row">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3" placeholder="Short description"></textarea>
+                <div class="error-msg" id="error-description" aria-live="polite"></div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="secondary" id="cancel-modal">Cancel</button>
+                <button type="submit" class="primary" id="save-btn">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="/js/store-management.js"></script>
+</body>
+</html>
