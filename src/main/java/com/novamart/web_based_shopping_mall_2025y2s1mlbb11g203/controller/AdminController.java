@@ -80,9 +80,14 @@ public class AdminController {
     // Handle edit request (show edit form)
     @GetMapping("/editUser")
     public String showEditForm(@RequestParam("userId") Long userId, Model model) {
-        User user = userService.getUserById(userId);
-        model.addAttribute("user", user);
-        return "editUser"; // Create this template next
+        try {
+            User user = userService.getUserById(userId);
+            model.addAttribute("user", user);
+            return "editUser";
+        } catch (Exception e) {
+            model.addAttribute("error", "User not found");
+            return "redirect:/admin/dashboard";
+        }
     }
 
 //    // Handle delete request
@@ -93,8 +98,24 @@ public class AdminController {
 //    }
 
     @PostMapping("/saveUser")
-    public String saveUser(@ModelAttribute User user) {
-        userService.saveUser(user); // Update user in database
-        return "redirect:/admin/dashboard";
+    public String saveUser(@ModelAttribute User user, Model model) {
+        try {
+            // Check if email is already in use by another user
+            if (userService.existsByEmail(user.getEmail())) {
+                User existingUser = userService.findByEmail(user.getEmail());
+                if (!existingUser.getId().equals(user.getId())) {
+                    model.addAttribute("error", "Email already in use by another user");
+                    model.addAttribute("user", user);
+                    return "editUser";
+                }
+            }
+            
+            userService.saveUser(user);
+            return "redirect:/admin/dashboard?success=User updated successfully";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error updating user: " + e.getMessage());
+            model.addAttribute("user", user);
+            return "editUser";
+        }
     }
 }

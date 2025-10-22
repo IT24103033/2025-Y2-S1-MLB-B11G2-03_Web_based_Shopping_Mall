@@ -2,14 +2,8 @@ package com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.controller;
 
 import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.entity.User;
 import com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.service.UserService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +35,11 @@ public class AuthController {
     @GetMapping("/login")
     public String showLoginForm() {
         return "login";
+    }
+
+    @GetMapping("/")
+    public String home() {
+        return "index";
     }
 
     @GetMapping("/home")
@@ -106,5 +105,10 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/logout-success")
+    public String logoutSuccess(Model model) {
+        model.addAttribute("success", "You have been logged out successfully.");
+        return "index";
+    }
 
 }

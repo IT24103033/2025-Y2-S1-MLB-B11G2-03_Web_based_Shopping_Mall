@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:include="fragments/header :: header"></head>
+<head th:include="fragments/header :: header">
+<link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
 <body>
 <h1>Profile</h1>
 <p th:if="${param.success}" class="success">Profile updated successfully!</p>
@@ -16,6 +18,7 @@
 </form>
 <!--<p>Role: <span th:text="*{}"></span></p>-->
 
+
 <h2>Change Password</h2>
 <form th:action="@{/change-password}" method="post">
     <input type="password" name="oldPassword" placeholder="Old Password" required/>
@@ -26,5 +29,6 @@
 
 <a th:href="@{/logout}">Logout</a>
 <div th:include="fragments/footer :: footer"></div>
+<script th:src="@{/js/profile.js}"></script>
 </body>
 </html>

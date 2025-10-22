@@ -89,6 +89,25 @@ public class UserService {
     }
 
     public void saveUser(User user) {
+        // If updating an existing user, preserve existing password unless a new one is provided
+        if (user.getId() != null) {
+            User existing = userRepository.findById(user.getId())
+                    .orElseThrow(() -> new ValidationException("User not found"));
+
+            // Preserve password if not supplied
+            if (user.getPassword() == null || user.getPassword().isBlank()) {
+                user.setPassword(existing.getPassword());
+            } else {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+        } else {
+            // New user path should always encode password
+            if (user.getPassword() == null || user.getPassword().isBlank()) {
+                throw new ValidationException("Password is required");
+            }
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
         userRepository.save(user);
     }
 }

@@ -37,9 +37,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/shop/**").hasAnyRole("SHOP_OWNER", "ADMIN")
-                        .requestMatchers("/", "/register", "/login", "/forgot-password").permitAll()
+                        .requestMatchers("/", "/register", "/login", "/forgot-password", "/home").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/home").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -48,7 +47,12 @@ public class SecurityConfig {
                         .successHandler(customLoginSuccessHandler)
                         .permitAll()
                 )
-                .logout(logout -> logout.permitAll());
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/home?logout=success")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll());
         return http.build();
     }
 }
