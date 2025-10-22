@@ -59,10 +59,12 @@ public class CartService {
      */
     public String addToCart(HttpSession session, String productId, int quantity) {
         String userId = getOrCreateUserId(session);
+        System.out.println("DEBUG addToCart: userId=" + userId + ", productId=" + productId + ", quantity=" + quantity);
         
         // Check if product exists
         Product product = productRepository.findById(productId).orElse(null);
         if (product == null) {
+            System.out.println("DEBUG addToCart: product not found -> " + productId);
             return "Product not found";
         }
         
@@ -74,6 +76,7 @@ public class CartService {
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
             existingItem.setUpdatedDate(LocalDateTime.now());
             cartItemRepository.save(existingItem);
+            System.out.println("DEBUG addToCart: updated existing cartItem for user=" + userId + " product=" + productId + " newQty=" + existingItem.getQuantity());
             return "Updated quantity in cart";
         } else {
             // Add new item to cart
@@ -86,6 +89,7 @@ public class CartService {
             newItem.setUpdatedDate(LocalDateTime.now());
             
             cartItemRepository.save(newItem);
+            System.out.println("DEBUG addToCart: added new cartItem id=" + newItem.getCartItemId() + " user=" + userId + " product=" + productId + " qty=" + quantity);
             return "Added to cart";
         }
     }

@@ -32,7 +32,7 @@
 
 /* Order Summary */
 .order-summary {
-    background: #f8f9fa;
+    background: #595953;
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -79,7 +79,7 @@
 
 /* Checkout Form */
 .checkout-form {
-    background: white;
+    background: #fbfbfb;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -148,6 +148,7 @@
 .payment-option label {
     margin-bottom: 0;
     cursor: pointer;
+    color: #000 !important;
 }
 
 /* Card Details Section */

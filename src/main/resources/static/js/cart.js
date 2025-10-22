@@ -23,6 +23,7 @@ function updateQuantity(button, change) {
     // Make AJAX call to update quantity
     fetch(`/api/cart/update/${productId}?quantity=${newQuantity}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         }
@@ -59,6 +60,7 @@ function removeItem(button) {
     // Make AJAX call to remove item
     fetch(`/api/cart/remove/${productId}`, {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         }
@@ -88,6 +90,7 @@ function clearCart() {
     
     fetch('/api/cart/clear', {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         }
@@ -106,13 +109,13 @@ function clearCart() {
 /**
  * Add test item to cart (for testing purposes)
  */
-function addTestItem(productId, quantity) {
-    const button = event.target;
+function addTestItem(button, productId, quantity) {
     button.textContent = 'Adding...';
     button.disabled = true;
-    
+
     fetch(`/api/cart/add/${productId}?quantity=${quantity}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         }

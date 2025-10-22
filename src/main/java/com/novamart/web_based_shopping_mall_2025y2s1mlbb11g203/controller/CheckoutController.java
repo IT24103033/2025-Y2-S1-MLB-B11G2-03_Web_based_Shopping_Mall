@@ -16,6 +16,9 @@ public class CheckoutController {
     @Autowired
     private CheckoutService checkoutService;
     
+    @Autowired
+    private com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.repository.OrderItemRepository orderItemRepository;
+    
     /**
      * Get checkout summary - shows cart items and total
      * GET /api/checkout/summary
@@ -73,6 +76,29 @@ public class CheckoutController {
                 return "Checkout failed. Please try again or contact support.";
             }
             
+        } catch (Exception e) {
+            return "Checkout failed: " + e.getMessage();
+        }
+    }
+
+    /**
+     * DEBUG endpoint: process checkout and return created order items (for verification)
+     * POST /api/checkout/process-return?paymentMethod=card
+     */
+    @PostMapping("/process-return")
+    public Object processCheckoutAndReturn(@RequestParam String paymentMethod, HttpSession session) {
+        try {
+            String orderId = checkoutService.processCheckout(session, paymentMethod);
+            if (orderId == null) {
+                return "Checkout failed";
+            }
+            // Fetch order items created for this order
+            java.util.List<com.novamart.web_based_shopping_mall_2025y2s1mlbb11g203.entity.OrderItem> items = orderItemRepository.findByOrderId(orderId);
+            java.util.Map<String, Object> result = new java.util.HashMap<>();
+            result.put("orderId", orderId);
+            result.put("itemsCount", items == null ? 0 : items.size());
+            result.put("items", items);
+            return result;
         } catch (Exception e) {
             return "Checkout failed: " + e.getMessage();
         }

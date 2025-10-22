@@ -23,7 +23,7 @@
 }
 
 .info-message {
-    background-color: #d4edda;
+    background-color: #fffdfd;
     color: #155724;
     padding: 10px;
     border-radius: 5px;
@@ -46,8 +46,9 @@
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 30px;
-    background: white;
+    background: rgba(255, 255, 255, 0.99);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: #000000;  /* Set text color to black */
 }
 
 .cart-table th,
@@ -55,6 +56,7 @@
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    color: #000000;  /* Set text color to black */
 }
 
 .cart-table th {
@@ -76,7 +78,7 @@
 .price,
 .item-total {
     font-weight: bold;
-    color: #007bff;
+    color: #000000;  /* Changed to black */
 }
 
 /* Quantity controls */
@@ -88,7 +90,7 @@
 
 .qty-btn {
     background: #007bff;
-    color: white;
+    color: #ffffff;
     border: none;
     width: 30px;
     height: 30px;
@@ -105,6 +107,7 @@
     min-width: 30px;
     text-align: center;
     font-weight: bold;
+    color: #000000; /* Set quantity text color to black */
 }
 
 .remove-btn {
@@ -122,16 +125,18 @@
 
 /* Cart summary */
 .cart-summary {
-    background: #f8f9fa;
+    background: #f8f6f6;
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 30px;
+    color: #000000; /* Set text color to black */
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
     padding: 5px 0;
+    color: #000000; /* Set text color to black */
 }
 
 .total-row {
@@ -140,7 +145,7 @@
     margin-top: 15px;
     font-weight: bold;
     font-size: 1.2em;
-    color: #007bff;
+    color: #000000;  /* Changed to black */
 }
 
 /* Action buttons */

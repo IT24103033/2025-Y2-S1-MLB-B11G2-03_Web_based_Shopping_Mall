@@ -33,6 +33,9 @@ public class CheckoutService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
     /**
      * Check if user is authenticated (placeholder for future implementation)
      * For now, temporary users can checkout
@@ -82,8 +85,16 @@ public class CheckoutService {
         try {
             String userId = cartService.getOrCreateUserId(session);
             List<CartItem> cartItems = cartService.getCartItems(session);
-            
-            if (cartItems.isEmpty()) {
+
+            // DEBUG: log cart items before processing
+            System.out.println("DEBUG: Cart has " + (cartItems == null ? 0 : cartItems.size()) + " item(s)");
+            if (cartItems != null) {
+                for (CartItem ci : cartItems) {
+                    System.out.println("DEBUG: CartItem -> productId=" + ci.getProductId() + ", quantity=" + ci.getQuantity());
+                }
+            }
+
+            if (cartItems == null || cartItems.isEmpty()) {
                 return null; // No items to checkout
             }
             
@@ -142,7 +153,9 @@ public class CheckoutService {
                     orderItem.setCreatedDate(LocalDateTime.now());
                     
                     // Save order item (order already exists)
+                    System.out.println("DEBUG orderItem: saving -> orderId=" + orderId + ", productId=" + orderItem.getProductId() + ", qty=" + orderItem.getQuantity());
                     orderItemRepository.save(orderItem);
+                    System.out.println("DEBUG orderItem: saved -> orderItemId=" + orderItem.getOrderItemId());
                     
                     System.out.println("Created order item: " + product.getName() + 
                                      " x" + cartItem.getQuantity());
@@ -152,6 +165,26 @@ public class CheckoutService {
             // Clear cart after successful checkout
             cartService.clearCart(session);
             
+            // Create and save payment record
+            Payment payment = new Payment();
+            payment.setPaymentId("PAY_" + UUID.randomUUID().toString());
+            payment.setOrderId(orderId);
+            payment.setAmount(totalAmount);
+            payment.setPaymentMethod(paymentMethod);
+            payment.setPaymentStatus("completed"); // For simplicity, mark as completed
+            payment.setTransactionId(UUID.randomUUID().toString()); // Generate a transaction ID
+            payment.setPaymentDate(LocalDateTime.now());
+            payment.setCreatedDate(LocalDateTime.now());
+            payment.setUpdatedDate(LocalDateTime.now());
+            
+            try {
+                paymentRepository.save(payment);
+                System.out.println("Payment record saved successfully: " + payment.getPaymentId());
+            } catch (Exception paymentError) {
+                System.out.println("Warning: Failed to save payment record: " + paymentError.getMessage());
+                // Don't fail the checkout if payment record fails
+            }
+
             // Send notification to customer about order completion
             try {
                 notificationService.getNotification(orderId);
@@ -165,6 +198,7 @@ public class CheckoutService {
             System.out.println("Order ID: " + orderId);
             System.out.println("Payment Method: " + paymentMethod);
             System.out.println("Total Amount: $" + totalAmount);
+            System.out.println("Payment ID: " + payment.getPaymentId());
             
             return orderId;
             

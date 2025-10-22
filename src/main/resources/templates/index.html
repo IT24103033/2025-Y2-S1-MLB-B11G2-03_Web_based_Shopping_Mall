@@ -53,7 +53,42 @@
     </div>
 </section>
 
+<!-- Product Selection for quick testing -->
+<section class="product-selection" style="max-width:1200px;margin:2rem auto;padding:2rem;background:#f8f9fa;border-radius:8px;">
+    <h2 style="color:#333;margin-bottom:1rem;">Select Products to Add to Cart</h2>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <div style="background:#fff;padding:1rem;border-radius:6px;min-width:220px;">
+            <label><input type="checkbox" class="select-product" data-product-id="PROD001"> <strong>Test Product</strong></label>
+            <p>$29.99</p>
+            <label>Qty: <input type="number" class="product-qty" data-product-id="PROD001" value="1" min="1" style="width:60px;"></label>
+        </div>
+
+        <div style="background:#fff;padding:1rem;border-radius:6px;min-width:220px;">
+            <label><input type="checkbox" class="select-product" data-product-id="PROD002"> <strong>Laptop Computer</strong></label>
+            <p>$1299.99</p>
+            <label>Qty: <input type="number" class="product-qty" data-product-id="PROD002" value="1" min="1" style="width:60px;"></label>
+        </div>
+
+        <div style="background:#fff;padding:1rem;border-radius:6px;min-width:220px;">
+            <label><input type="checkbox" class="select-product" data-product-id="PROD003"> <strong>Wireless Headphones</strong></label>
+            <p>$199.99</p>
+            <label>Qty: <input type="number" class="product-qty" data-product-id="PROD003" value="1" min="1" style="width:60px;"></label>
+        </div>
+
+        <div style="background:#fff;padding:1rem;border-radius:6px;min-width:220px;">
+            <label><input type="checkbox" class="select-product" data-product-id="PROD004"> <strong>Smartphone</strong></label>
+            <p>$899.99</p>
+            <label>Qty: <input type="number" class="product-qty" data-product-id="PROD004" value="1" min="1" style="width:60px;"></label>
+        </div>
+    </div>
+    <div style="margin-top:1rem;">
+        <button id="addSelectedBtn" style="background:#007bff;color:white;padding:10px 18px;border-radius:6px;border:none;cursor:pointer;font-weight:bold;">Add Selected to Cart</button>
+    </div>
+</section>
+
 <!-- Footer -->
 <div th:replace="fragments/footer :: footer"></div>
+<script th:src="@{/js/cart.js}"></script>
+<script th:src="@{/js/products.js}"></script>
 </body>
 </html>

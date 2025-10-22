@@ -50,7 +50,12 @@ public class OrderWebController {
             model.addAttribute("totalAmount", totalAmount);
             model.addAttribute("totalItems", totalItems);
             model.addAttribute("isEmpty", cartItems.isEmpty());
-            
+
+            // If cart is empty, show the homepage where users can select products
+            if (cartItems.isEmpty()) {
+                return "index";
+            }
+
             return "cart";
             
         } catch (Exception e) {
