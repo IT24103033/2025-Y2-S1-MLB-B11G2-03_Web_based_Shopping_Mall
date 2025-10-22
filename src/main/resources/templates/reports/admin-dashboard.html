@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Nova Shopping Mall</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/reports.css}">
+    <style>
+        .admin-section {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-section h2 {
+            color: #ff4444;
+            margin: 0 0 1rem 0;
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .reports-table th, .reports-table td {
+            border: 1px solid #ffd700;
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .reports-table th {
+            background: #333;
+            color: #ffd700;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .bulk-actions {
+            background: #222;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .report-form {
+            background: #222;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            border: 1px solid #ffd700;
+        }
+
+        .report-form h3 {
+            color: #ffd700;
+            margin: 0 0 1rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #333;
+            border-radius: 3px;
+            background: #111;
+            color: #fff;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">
+            <h1>Nova Shopping <span class="gold">Mall</span> - Admin</h1>
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/reports/admin">Admin Dashboard</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="dashboard">
+    <div class="admin-section">
+        <h2>🔧 Admin </h2>
+        <p>Manage all reports across the system. Delete expired or unwanted reports.</p>
+    </div>
+
+    <div class="bulk-actions">
+        <h3>Bulk Actions</h3>
+        <form th:action="@{/reports/admin/delete-expired}" method="post">
+            <button type="submit" class="btn-danger">Delete All Expired Reports (1+ years old)</button>
+        </form>
+    </div>
+
+    <h2>Generate Reports (Admin)</h2>
+
+    <!-- Admin Report Generation Forms -->
+    <div class="admin-report-forms">
+        <!-- Inventory Report Form (AJAX) -->
+        <form id="inventory-report-form" class="report-form">
+            <h3>📦 Inventory Report</h3>
+            <p>Generate system-wide inventory report.</p>
+
+            <div class="form-group">
+                <label>User ID :</label>
+                <input type="number" id="inventory-user-id" name="userId" placeholder="Enter user ID (e.g., 1)" min="1" required>
+                <small style="color: #999; display: block; margin-top: 0.25rem;">Enter the user ID who is generating this report</small>
+            </div>
+
+            <div class="form-group">
+                <label>Shop ID :</label>
+                <input type="number" id="inventory-shop-id" name="shopId" placeholder="Enter shop ID (e.g., 1)" min="1">
+                <small style="color: #999; display: block; margin-top: 0.25rem;">Enter a specific shop ID or leave empty for all shops</small>
+            </div>
+
+            <div class="form-group">
+                <label>Report Date (Stock as of):</label>
+                <input type="date" id="inventory-report-date" name="reportDate" required>
+                <small style="color: #999; display: block; margin-top: 0.25rem;">Select the date to check available stock levels</small>
+            </div>
+
+            <button type="submit" class="btn-success">Generate Inventory Report</button>
+        </form>
+
+        <!-- Sales Report Form (AJAX) -->
+        <form id="sales-report-form" class="report-form">
+            <h3>💰 Sales Report</h3>
+            <p>Generate sales analytics for a specific date range.</p>
+
+            <div class="form-group">
+                <label>User ID :</label>
+                <input type="number" id="sales-user-id" name="userId" placeholder="Enter user ID (e.g., 1 )" min="1" required>
+                <small style="color: #999; display: block; margin-top: 0.25rem;">Enter the user ID who is generating this report</small>
+            </div>
+
+            <div class="form-group">
+                <label>Shop ID :</label>
+                <input type="number" id="sales-shop-id" name="shopId" placeholder="Enter shop ID (e.g., 1)" min="1">
+                <small style="color: #999; display: block; margin-top: 0.25rem;">Enter a specific shop ID or leave empty for all shops</small>
+            </div>
+
+            <div class="form-group">
+                <label>Report Name:</label>
+                <input type="text" id="sales-report-name" name="reportName" placeholder="e.g., Sales Report 2025" required>
+            </div>
+
+            <div class="form-group">
+                <label>Report Description:</label>
+                <textarea id="sales-report-description" name="reportDescription" rows="3"
+                          placeholder="Brief description of this report..." style="resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Start Date:</label>
+                <input type="date" id="sales-start-date" name="startDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>End Date:</label>
+                <input type="date" id="sales-end-date" name="endDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Product Categories :</label>
+                <select id="sales-product-categories" name="productCategories" multiple style="min-height: 100px;">
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Home Goods">Home Goods</option>
+                    <option value="Books">Books</option>
+                    <option value="Groceries">Groceries</option>
+                </select>
+                <small style="color: #999; display: block; margin-top: 0.25rem;">Hold Ctrl/Cmd to select multiple categories. Leave empty for all categories.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Order Statuses :</label>
+                <select id="sales-order-statuses" name="orderStatuses" multiple style="min-height: 100px;">
+                    <option value="PENDING">Pending</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                </select>
+                <small style="color: #999; display: block; margin-top: 0.25rem;">Hold Ctrl/Cmd to select multiple statuses. Leave empty for all statuses.</small>
+            </div>
+
+            <button type="submit" class="btn-success">Generate Sales Report</button>
+        </form>
+    </div>
+
+    <!-- Report Display Area -->
+    <div id="report-display-area" style="display: none;"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Processing...</p>
+    </div>
+
+    <h2>All Reports in System</h2>
+    <table class="reports-table">
+        <thead>
+        <tr>
+            <th>Report ID</th>
+            <th>Type</th>
+            <th>User ID</th>
+            <th>Generated Date</th>
+            <th>Period</th>
+            <th>Format</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="report : ${reports}">
+            <td th:text="${report.reportId}"></td>
+            <td th:text="${report.reportType}"></td>
+            <td th:text="${report.userId}"></td>
+            <td th:text="${report.generatedDate}"></td>
+            <td th:text="${report.periodStart} + ' to ' + ${report.periodEnd}"></td>
+            <td th:text="${report.format}"></td>
+            <td>
+                <a th:href="@{'/reports/view/' + ${report.reportId}}" class="btn">View</a>
+                <a th:href="@{'/reports/edit/' + ${report.reportId}}" class="btn" style="background: #4CAF50; color: white;">Edit</a>
+                <form th:action="@{'/reports/delete/' + ${report.reportId}}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${reports.empty}" class="alert alert-info">
+        <p>No reports found in the system.</p>
+    </div>
+</main>
+
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

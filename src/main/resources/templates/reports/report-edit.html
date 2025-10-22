@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Report - Nova Shopping Mall</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/reports.css}">
+    <style>
+        .edit-form {
+            background: #222;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+
+        .edit-form h2 {
+            color: #ffd700;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        .form-group .readonly {
+            background: #1a1a1a;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #ffd700;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background: #e6c200;
+        }
+
+        .btn-secondary {
+            background: #555;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: #666;
+        }
+
+        .info-section {
+            background: #333;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid #ffd700;
+        }
+
+        .info-section p {
+            color: #aaa;
+            margin: 0.5rem 0;
+        }
+
+        .info-section strong {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">
+            <h1>Nova Shopping <span class="gold">Mall</span></h1>
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a th:href="${userRole == 'shop' ? '/reports/shop' : '/reports/admin'}">Dashboard</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="dashboard">
+    <div class="edit-form">
+        <h2>✏️ Edit Report</h2>
+
+        <div class="info-section">
+            <p><strong>Report ID:</strong> <span th:text="${report.reportId}"></span></p>
+            <p><strong>Report Type:</strong> <span th:text="${report.reportType}"></span></p>
+            <p><strong>Generated Date:</strong> <span th:text="${report.generatedDate}"></span></p>
+            <p><strong>Period:</strong> <span th:text="${report.periodStart} + ' to ' + ${report.periodEnd}"></span></p>
+        </div>
+
+        <form th:action="@{'/reports/update/' + ${report.reportId}}" method="post">
+            <input type="hidden" name="userRole" th:value="${userRole}" />
+            <div class="form-group">
+                <label for="reportName">Report Name: <span style="color: #dc3545;">*</span></label>
+                <input type="text"
+                       id="reportName"
+                       name="reportName"
+                       th:value="${report.reportName}"
+                       placeholder="Enter report name"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="reportDescription">Report Description: <span style="color: #dc3545;">*</span></label>
+                <textarea id="reportDescription"
+                          name="reportDescription"
+                          th:text="${report.reportDescription}"
+                          placeholder="Enter report description"
+                          required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Report Type (Read-only):</label>
+                <input type="text"
+                       th:value="${report.reportType}"
+                       class="readonly"
+                       readonly>
+            </div>
+
+            <div class="form-group" th:if="${report.productCategory != null and !report.productCategory.isEmpty()}">
+                <label>Product Categories (Read-only):</label>
+                <input type="text"
+                       th:value="${report.productCategory}"
+                       class="readonly"
+                       readonly>
+            </div>
+
+            <div class="form-group" th:if="${report.orderStatus != null and !report.orderStatus.isEmpty()}">
+                <label>Order Statuses (Read-only):</label>
+                <input type="text"
+                       th:value="${report.orderStatus}"
+                       class="readonly"
+                       readonly>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                <a th:href="@{'/reports/view/' + ${report.reportId} + '?userRole=' + ${userRole}}" class="btn btn-secondary">❌ Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>
