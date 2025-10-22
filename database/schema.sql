@@ -55,3 +55,5 @@ CREATE TABLE if not exists AdminPermission (
                                  permission_name VARCHAR(100) NOT NULL,
                                  FOREIGN KEY (admin_id) REFERENCES Admin(admin_id) ON DELETE CASCADE
 );
+
+

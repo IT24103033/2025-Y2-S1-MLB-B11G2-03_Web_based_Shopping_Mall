@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}">
 </head>
@@ -69,6 +71,17 @@
 
   <!-- Dashboard Content -->
   <main class="dashboard-content">
+    
+    <!-- Success/Error Messages -->
+    <div th:if="${param.success}" class="alert alert-success" style="display: block;">
+      <span th:text="${param.success}">Success message</span>
+      <button type="button" class="close" onclick="this.parentElement.style.display='none'">&times;</button>
+    </div>
+    
+    <div th:if="${param.error}" class="alert alert-error" style="display: block;">
+      <span th:text="${param.error}">Error message</span>
+      <button type="button" class="close" onclick="this.parentElement.style.display='none'">&times;</button>
+    </div>
 
     <!-- Overview Section -->
     <section id="overview-section" class="content-section active">

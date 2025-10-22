@@ -86,9 +86,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ============ TABLE ACTION BUTTONS ============
+    
+    // Function to attach event listeners to user action buttons
+    function attachUserActionListeners() {
+        // Edit button handlers
+        const editBtns = document.querySelectorAll('.edit-btn');
+        editBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.getAttribute('data-user-id');
+                if (userId) {
+                    window.location.href = `/admin/editUser?userId=${userId}`;
+                }
+            });
+        });
 
-    // Edit button handlers
-    const editBtns = document.querySelectorAll('.edit-btn');
+        // Delete button handlers
+        const deleteBtns = document.querySelectorAll('.delete-btn');
+        deleteBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.getAttribute('data-user-id');
+                if (userId && confirm('Are you sure you want to delete this user?')) {
+                    deleteUser(userId);
+                }
+            });
+        });
+    }
+    
+    // Function to delete user via AJAX
+    async function deleteUser(userId) {
+        try {
+            // Get CSRF token from meta tag
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+            
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+            
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+            
+            const response = await fetch(`/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: headers
+            });
+            
+            if (response.ok) {
+                showNotification('User deleted successfully', 'success');
+                // Reload the users table
+                loadUsersTable();
+            } else {
+                const errorText = await response.text();
+                showNotification('Error deleting user: ' + errorText, 'error');
+            }
+        } catch (error) {
+            showNotification('Error deleting user: ' + error.message, 'error');
+            console.error('Delete error:', error);
+        }
+    }
+
+    // Edit button handlers (for other tables)
+    const editBtns = document.querySelectorAll('.edit-btn:not([data-user-id])');
     editBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const row = this.closest('tr');
@@ -98,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Delete button handlers
-    const deleteBtns = document.querySelectorAll('.delete-btn');
+    // Delete button handlers (for other tables)
+    const deleteBtns = document.querySelectorAll('.delete-btn:not([data-user-id])');
     deleteBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const row = this.closest('tr');
@@ -368,11 +428,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${u.role ?? ''}</td>
                 <td><span class="badge badge-success">Active</span></td>
                 <td>
-                  <button class="btn-icon edit-btn" title="Edit">✏️</button>
-                  <button class="btn-icon delete-btn" title="Delete">🗑️</button>
+                  <button class="btn-icon edit-btn" title="Edit" data-user-id="${u.id}">✏️</button>
+                  <button class="btn-icon delete-btn" title="Delete" data-user-id="${u.id}">🗑️</button>
                 </td>
               </tr>
             `).join('');
+            
+            // Re-attach event listeners for the new buttons
+            attachUserActionListeners();
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="6">Error loading users</td></tr>';
             console.error(e);
