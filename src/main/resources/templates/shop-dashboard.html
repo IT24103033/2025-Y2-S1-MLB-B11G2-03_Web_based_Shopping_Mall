@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Owner Dashboard - NovaMart</title>
+    <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Shop Owner Dashboard</h1>
+        <nav>
+            <a th:href="@{/profile}" class="btn btn-secondary" style="margin-right:10px">Profile</a>
+            <a href="/logout" class="btn btn-secondary">Logout</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-content">
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Products</h3>
+                <p th:text="${totalProducts}">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <p th:text="${totalOrders}">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Monthly Revenue</h3>
+                <p>$<span th:text="${monthlyRevenue}">0</span></p>
+            </div>
+        </section>
+
+        <section class="management-section">
+            <h2>Product Management</h2>
+            <div class="actions">
+                <a href="#" class="btn btn-primary">Add Product</a>
+            </div>
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="5">No products yet</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="management-section">
+            <h2>Reports</h2>
+            <div class="actions">
+                <a href="#" class="btn">Download Sales Report</a>
+                <a href="#" class="btn">Download Inventory Report</a>
+            </div>
+            <p>Reports will be available here.</p>
+        </section>
+    </main>
+</div>
+
+<script th:src="@{/js/admin-dashboard.js}"></script>
+</body>
+<html>
+
+
